@@ -6,7 +6,7 @@ def handle_events():
     global running
     global C_x, C_y
     global p1, p2
-    global x,y, i
+    global x,y, i, is_right
 
     events = get_events()
     for event in events:
