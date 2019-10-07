@@ -24,7 +24,7 @@ def handle_events():
             elif event.key == SDLK_LEFT:
                 dir += 1
         elif event.type == SDL_MOUSEMOTION:
-            C_x, C_y = event.x, KPU_HEIGHT - 1 - event.y
+            C_x, C_y = event.x + 18, KPU_HEIGHT - 1 - event.y - 20
     pass
 
 def Move():
