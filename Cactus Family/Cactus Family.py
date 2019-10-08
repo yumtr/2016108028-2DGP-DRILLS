@@ -32,18 +32,19 @@ def handle_events():
                 dir_y += 1
 
 
-
 open_canvas()
 grass = load_image('grass.png')
 character = load_image('Cactus test.png')
+stone = load_image('stone.png')
+
 running = True
 x = 400 // 2
 y = 90
 
-
 print(rect)
 
 frame = 0
+frame_stone = 0
 dir = 0
 dir_y = 0
 
@@ -55,13 +56,15 @@ while running:
     #   character.clip_draw(frame * 100, 100 * 1, 100, 100, x, 90)
     # else:
     #   character.clip_draw(frame * 100, 0 * 1, 100, 100, x, 90)
+    character.clip_draw(frame * 100, 0 * 1, 100, 100, 400, 90)
+    stone.clip_draw(frame_stone * 100, 0 * 1, 100, 100, x, y)
 
-    character.clip_draw(frame * 100, 0 * 1, 100, 100, x, y)
     update_canvas()
-
 
     handle_events()
     frame = (frame + 1) % 8
+    frame_stone = (frame_stone + 1) % 20
+
     x += dir * 10
     y += dir_y * 10
     delay(0.05)

@@ -42,6 +42,7 @@ open_canvas(KPU_WIDTH, KPU_HEIGHT)
 KPU = load_image('KPU_GROUND.png')
 character = load_image('animation_sheet.png')
 hand_curser = load_image('hand_arrow.png')
+
 running = True
 x = 400
 y = 300
