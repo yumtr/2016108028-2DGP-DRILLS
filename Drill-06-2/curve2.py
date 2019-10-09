@@ -99,12 +99,9 @@ p8 = (random.randint(1, 7) * 100, random.randint(1, 5) * 100)
 p9 = (random.randint(1, 7) * 100, random.randint(1, 5) * 100)
 p0 = (random.randint(1, 7) * 100, random.randint(1, 5) * 100)
 
-print(p1, p2, p3, p4, p5, p6, p7, p8, p9, p0)
 while running:
-
     clear_canvas()
     KPU.draw(KPU_WIDTH // 2, KPU_HEIGHT // 2)
-    #move_point((500, 200), (400, 350), (300, 100), (100, 500), (300, 100), (400, 350), (500, 200), (200, 400), (400, 300), (100, 200))
     move_point((p1[0], p1[1]),
                (p2[0], p2[1]),
                (p3[0], p3[1]),
