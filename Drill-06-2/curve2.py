@@ -1,4 +1,3 @@
-import turtle
 import random
 from pico2d import *
 
@@ -8,9 +7,8 @@ KPU_WIDTH, KPU_HEIGHT = 800, 600
 def make_rand():
     global rand
     for i in range(0, 10, 1):
-        rand[i].x = random.uniform(0, 800)
-        rand[i].y = random.uniform(0, 600)
-        return rand
+        rand[i].x = random.randint(0, 800)
+        rand[i].y = random.randint(0, 600)
 
 
 def move_point(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10):
@@ -91,15 +89,16 @@ character = load_image('animation_sheet.png')
 x = 400
 y = 300
 frame = 0
-rand = 0
+rand = [].x = 0
+rand = [].y = 0
 i = 1
 is_right = True
+make_rand()
 while running:
     clear_canvas()
     KPU.draw(KPU_WIDTH // 2, KPU_HEIGHT // 2)
-   # move_point((500, 200), (400, 350), (300, 100), (100, 500), (300, 100), (100, 300), (500, 200), (200, 400),
-               #(400, 300), (100, 200))
-    move_point((rand[0].x, rand[0].y), (rand[0].x, rand[0].y), (rand[0].x, rand[0].y), (rand[0].x, rand[0].y), (rand[0].x, rand[0].y), (rand[0].x, rand[0].y), (rand[0].x, rand[0].y), (rand[0].x, rand[0].y), (rand[0].x, rand[0].y))
+    #move_point((500, 200), (400, 350), (300, 100), (100, 500), (300, 100), (100, 300), (500, 200), (200, 400), (400, 300), (100, 200))
+    move_point((rand[0].x, rand[0].y), (rand[1].x, rand[1].y), (rand[2].x, rand[2].y), (rand[3].x, rand[3].y), (rand[4].x, rand[4].y), (rand[5].x, rand[5].y), (rand[6].x, rand[6].y), (rand[7].x, rand[7].y), (rand[8].x, rand[8].y), (rand[9].x, rand[9].y))
     if is_right:
         character.clip_draw(frame * 100, 0 * 1, 100, 100, x, y)
     else:
