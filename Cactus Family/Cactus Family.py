@@ -1,6 +1,8 @@
 # coding=utf-8
 from pico2d import *
 
+MAP_WIDTH = 900
+MAP_HEIGHT = 900
 
 class Player():
     ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD = 0, 1, 2
@@ -16,7 +18,7 @@ class Stone(Player):
         self.ydir = self.ST_Y_NONE
         self.frame = 0
         self.x = 400
-        self.y = 300
+        self.y = 350
         self.old_x = 0
         self.old_y = 0
         self.obj = 0
@@ -53,24 +55,23 @@ class Stone(Player):
     def handle_Stone(self, event):
         if event.type == SDL_KEYDOWN:
             print('key downed')
-            if event.key == SDLK_d:
-                if self.xdir in (self.ST_X_NONE, self.ST_X_BAKWARD):
+            if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
+                if event.key == SDLK_d:
                     self.xdir = self.ST_X_FORWARD
                     self.old_x = self.x + 100
-            elif event.key == SDLK_a:
-                if self.xdir in (self.ST_X_NONE, self.ST_X_FORWARD):
+                elif event.key == SDLK_a:
                     self.xdir = self.ST_X_BAKWARD
                     self.old_x = self.x - 100
-            elif event.key == SDLK_w:
-                if self.ydir in (self.ST_Y_NONE, self.ST_Y_DOWN):
-                    self.ydir = self.ST_Y_UP
-                    self.old_y = self.y + 100
-            elif event.key == SDLK_s:
-                if self.ydir in (self.ST_Y_NONE, self.ST_Y_UP):
-                    self.ydir = self.ST_Y_DOWN
-                    self.old_y = self.y - 100
-            elif event.key == SDLK_g:
-                self.set_pos(300, 400)
+                elif event.key == SDLK_w:
+                    if self.ydir in (self.ST_Y_NONE, self.ST_X_NONE):
+                        self.ydir = self.ST_Y_UP
+                        self.old_y = self.y + 100
+                elif event.key == SDLK_s:
+                    if self.ydir in (self.ST_Y_NONE, self.ST_X_NONE):
+                        self.ydir = self.ST_Y_DOWN
+                        self.old_y = self.y - 100
+            if event.key == SDLK_g:
+                self.set_pos((MAP_WIDTH / 2) + 50, MAP_HEIGHT / 2)
         # elif event.type == SDL_KEYUP:
         #     print('key up')
         #     if event.key == SDLK_d:
@@ -161,15 +162,15 @@ def collision():
 
 test = Stone()
 
-open_canvas()
+open_canvas(MAP_WIDTH, MAP_HEIGHT)
 test.obj = load_image('stone.png')
-grass = load_image('grass.png')
+Map_Test = load_image('Map_1.png')
 # cactus = load_image('Cactus test.png')
 stone = load_image('Cactus test.png')
 
 running = True
 x = 200
-y = 300
+y = 350
 rect = x - 50, y + 50, x + 50, y - 50
 
 frame_stone = 0
@@ -179,7 +180,7 @@ dir_y = 0
 
 def render():
     global frame_stone
-    grass.draw(400, 30)
+    Map_Test.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
     test.render()
     stone.clip_draw(frame_stone * 100, 0 * 1, 100, 100, x, y)
     frame_stone = (frame_stone + 1) % 8
