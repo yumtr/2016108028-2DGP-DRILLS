@@ -144,17 +144,17 @@ def collision():
 
     if y == test.y and test.xdir != test.ST_X_NONE:
         # 오른쪽 충돌
-        if rect[2] >= test.rect[0] and test.xdir == test.ST_X_BAKWARD:
+        if rect[2] >= test.rect[0] and rect[0] < test.rect[2] and test.xdir == test.ST_X_BAKWARD:
             x -= test.speed
         # 왼쪽 충돌
-        elif rect[0] <= test.rect[2] and test.xdir == test.ST_X_FORWARD:
+        elif rect[0] <= test.rect[2] and rect[2] > test.rect[0] and test.xdir == test.ST_X_FORWARD:
             x += test.speed
     if x == test.x and test.ydir != test.ST_Y_NONE:
         # 위 충돌
-        if rect[1] >= test.rect[3] and test.ydir == test.ST_Y_DOWN:
+        if rect[1] >= test.rect[3] and rect[3] < test.rect[1] and test.ydir == test.ST_Y_DOWN:
             y -= test.speed
         # 아래 충돌
-        elif rect[3] <= test.rect[1] and test.ydir == test.ST_Y_UP:
+        elif rect[3] <= test.rect[1] and rect[1] > test.rect[3] and test.ydir == test.ST_Y_UP:
             y += test.speed
 
 
