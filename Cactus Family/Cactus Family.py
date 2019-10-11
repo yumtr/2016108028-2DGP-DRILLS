@@ -76,29 +76,34 @@ class Stone(Player):
 
     def render(self):
         self.draw_image(20, 100, 100)
+        draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
 
     def update(self):
         self.move()
-        self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
+        self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
 
 
 class Cactus(Stone):
-    def __init__(self):
-        self.set_pos(400, 200)
+    def __init__(self, px, py):
+        self.set_pos(px, py)
         self.frame = 0
         self.speed = 25
+        self.left = 50
+        self.top = 50
+        self.right = 50
+        self.bottom = 50
+        self.rect = [self.x - self.left, self.y + self.top, self.x + self.right, self.y - self.bottom]
         self.state = 0
-        self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
 
     def collision(self, test):
-        if self.y == test.y and test.xdir != test.ST_X_NONE:
+        if self.rect[3] < test.y < self.rect[1] and test.xdir != test.ST_X_NONE:
             # 오른쪽 충돌
             if self.rect[2] >= test.rect[0] and self.rect[0] < test.rect[2] and test.xdir == test.ST_X_BAKWARD:
                 self.x -= self.speed
             # 왼쪽 충돌
             elif self.rect[0] <= test.rect[2] and self.rect[2] > test.rect[0] and test.xdir == test.ST_X_FORWARD:
                 self.x += self.speed
-        elif self.x == test.x and test.ydir != test.ST_Y_NONE:
+        elif self.rect[0] < test.x < self.rect[2] and test.ydir != test.ST_Y_NONE:
             # 위 충돌
             if self.rect[1] >= test.rect[3] and self.rect[3] < test.rect[1] and test.ydir == test.ST_Y_DOWN:
                 self.y -= self.speed
@@ -107,27 +112,32 @@ class Cactus(Stone):
                 self.y += self.speed
 
     def collision2(self, ano):
-
         # 좌우
         if self.y == ano.y:
             if self.rect[2] == ano.rect[0]:
-                print("나나나나나")
-                self.x = ano.x - 100
+                # self.x = ano.x - (ano.left + ano.right)
+                self.right = 150
+                print('1')
             elif self.rect[0] == ano.rect[2]:
-                print("dsdsd")
-                self.x = ano.x + 100
+                # self.x = ano.x + (ano.left + ano.right)
+                self.left = 150
+                print('2')
         # 상하
         elif self.x == ano.x:
             if self.rect[1] == ano.rect[3]:
-                self.y = ano.y - 100
+                # self.y = ano.y - (ano.top + ano.bottom)
+                self.top = 150
+                print('3')
             elif self.rect[3] == ano.rect[1]:
-                self.y = ano.y + 100
+                # self.y = ano.y + (ano.top + ano.bottom)
+                self.bottom = 150
+                print('4')
 
     def render(self):
         self.draw_image(8, 100, 100)
 
     def update(self):
-        self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
+        self.rect = [self.x - self.left, self.y + self.top, self.x + self.right, self.y - self.bottom]
 
 
 def exit():
@@ -136,13 +146,10 @@ def exit():
     running = False
     pass
 
-
 def handle_events():
     global running
-    global rect
     events = get_events()
     for event in events:
-
         if event.type == SDL_QUIT:
             exit()
         elif event.type == SDL_KEYDOWN:
@@ -150,7 +157,12 @@ def handle_events():
                 exit()
             elif event.key == SDLK_q:
                 for i in 0, 2, 1:
-                    cac[i].set_pos((i * 200) + 200, (i * 200) + 200)
+                    cac[i].__init__((i * 200) + 200, (i * 200) + 200)
+                    cac[i].state = 0
+            elif event.key == SDLK_e:
+                print(test.rect)
+                for i in 0, 2, 1:
+                    print(cac[i].rect)
             else:
                 test.handle_Stone(event)
         elif event.type == SDL_KEYUP:
@@ -160,19 +172,20 @@ def handle_events():
 open_canvas(MAP_WIDTH, MAP_HEIGHT)
 test = Stone()
 test.set_image('stone.png')
-cac = [Cactus(), Cactus(), Cactus()]
+cac = [Cactus(300, 400), Cactus(200, 600), Cactus(500, 200)]
 for i in 0, 2, 1:
     cac[i].set_image('Cactus test.png')
 Map_Test = load_image('Map_1.png')
 running = True
-cac[1].set_pos(600, 200)
-cac[2].set_pos(200, 600)
+BGM = load_music('SweetPoop .mp3')
 
 
 def render():
     Map_Test.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
     test.render()
+
     for i in 0, 2, 1:
+        draw_rectangle(cac[i].rect[0], cac[i].rect[1], cac[i].rect[2], cac[i].rect[3])
         cac[i].render()
 
 
@@ -181,10 +194,13 @@ def update():
     for i in 0, 2, 1:
         cac[i].update()
         cac[i].collision(test)
-        cac[0].collision2(cac[i])
-        cac[1].collision2(cac[i])
-        cac[2].collision2(cac[i])
 
+    cac[0].collision2(cac[1])
+    cac[0].collision2(cac[2])
+    cac[1].collision2(cac[0])
+    cac[1].collision2(cac[2])
+    cac[2].collision2(cac[0])
+    cac[2].collision2(cac[1])
     handle_events()
     update_canvas()
 
