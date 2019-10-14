@@ -74,13 +74,12 @@ class Stone(Player):
                 if event.key == SDLK_g:
                     self.set_pos((MAP_WIDTH / 2) + 50, MAP_HEIGHT / 2)
 
-    def render(self):
-        self.draw_image(20, 100, 100)
-        # draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
-
     def update(self):
         self.move()
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
+
+    def render(self):
+        self.draw_image(20, 100, 100)
 
 
 class Cactus(Stone):
@@ -90,8 +89,7 @@ class Cactus(Stone):
         self.xdir = self.ST_X_NONE
         self.ydir = self.ST_Y_NONE
         self.set_pos(px, py)
-        self.old_x = 0
-        self.old_y = 0
+        self.old_x, self.old_y = 0, 0
         self.frame = 0
         self.speed = 25
         self.left = 50
@@ -178,8 +176,7 @@ class Cactus(Stone):
         if self.rect[3] == player.rect[3] and player.rect[1] == self.rect[1] and player.xdir != player.ST_X_NONE:
             # 오른쪽 충돌
             if self.rect[2] >= player.rect[0] and self.rect[0] < player.rect[2] and player.xdir == player.ST_X_BAKWARD:
-                if self.isMerge:
-
+                #if self.isMerge:
                 self.xdir = self.ST_X_BAKWARD
                 #self.x -= self.speed
                 self.old_x = self.x
@@ -248,7 +245,6 @@ def exit():
     global running
     close_canvas()
     running = False
-    pass
 
 
 def handle_events():
