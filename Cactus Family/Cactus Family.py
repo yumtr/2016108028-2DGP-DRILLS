@@ -18,14 +18,12 @@ class Stone(Player):
     def __init__(self):
         self.xdir = self.ST_X_NONE
         self.ydir = self.ST_Y_NONE
-        self.frame = 0
-        self.x = 400
-        self.y = 300
-        self.old_x = 0
-        self.old_y = 0
-        self.obj = 0
+        self.frame, self.obj = 0, 0
+        self.x, self.y = 400, 300
+        self.old_x, self.old_y = 0, 0
         self.speed = 20
         self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
+        self.isMovable = True
 
     def set_image(self, filename):
         self.obj = load_image(filename)
@@ -39,22 +37,25 @@ class Stone(Player):
         self.frame = (self.frame + 1) % count
 
     def move(self):
-        if self.xdir == self.ST_X_FORWARD:
-            self.x += self.speed
-            if self.x >= self.old_x:
-                self.xdir = self.ST_X_NONE
-        elif self.xdir == self.ST_X_BAKWARD:
-            self.x -= self.speed
-            if self.x <= self.old_x:
-                self.xdir = self.ST_X_NONE
-        if self.ydir == self.ST_Y_UP:
-            self.y += self.speed
-            if self.y >= self.old_y:
-                self.ydir = self.ST_Y_NONE
-        elif self.ydir == self.ST_Y_DOWN:
-            self.y -= self.speed
-            if self.y <= self.old_y:
-                self.ydir = self.ST_Y_NONE
+        if self.isMovable:
+            if self.xdir == self.ST_X_FORWARD:
+                self.x += self.speed
+                if self.x >= self.old_x:
+                    self.xdir = self.ST_X_NONE
+            elif self.xdir == self.ST_X_BAKWARD:
+                self.x -= self.speed
+                if self.x <= self.old_x:
+                    self.xdir = self.ST_X_NONE
+            if self.ydir == self.ST_Y_UP:
+                self.y += self.speed
+                if self.y >= self.old_y:
+                    self.ydir = self.ST_Y_NONE
+            elif self.ydir == self.ST_Y_DOWN:
+                self.y -= self.speed
+                if self.y <= self.old_y:
+                    self.ydir = self.ST_Y_NONE
+        else:
+            print('못움직임')
 
     def handle_Stone(self, event):
         if event.type == SDL_KEYDOWN:
@@ -71,7 +72,7 @@ class Stone(Player):
                 elif event.key == SDLK_s and 50 < self.rect[3]:
                     self.ydir = self.ST_Y_DOWN
                     self.old_y = self.y - 100
-                if event.key == SDLK_g:
+                elif event.key == SDLK_g:
                     self.set_pos((MAP_WIDTH / 2) + 50, MAP_HEIGHT / 2)
 
     def update(self):
@@ -97,6 +98,7 @@ class Cactus(Stone):
         self.speed = 20
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
         self.isColl = False
+        self.isMovable = True
 
     def New_coll(self, ano):
         if 1:
@@ -119,12 +121,14 @@ class Cactus(Stone):
                     for i in coll_group:
                         cac[i].xdir = cac[i].ST_X_BAKWARD
                         cac[i].old_x = cac[i].x - 25
+                # TODO 그룹에 속해있지않은데 이미 그룹에 누가 있다면
                 else:
                     self.xdir = self.ST_X_BAKWARD
                     self.old_x = self.x - 25
                 print('col 0')
             # 왼쪽 충돌
-            elif self.rect[0] <= player.rect[2] and self.rect[2] > player.rect[0] and player.xdir == player.ST_X_FORWARD:
+            elif self.rect[0] <= player.rect[2] and self.rect[2] > player.rect[
+                0] and player.xdir == player.ST_X_FORWARD:
                 if self.isColl:
                     for i in coll_group:
                         cac[i].xdir = cac[i].ST_X_FORWARD
@@ -159,33 +163,7 @@ class Cactus(Stone):
                 print('col 3')
 
     def handle_cactus(self, event):
-        if event.type == SDL_KEYDOWN:
-            if self.xdir == self.ST_X_FORWARD and event.key == SDLK_d:
-                print('hi')
-                if self.isColl:
-                    for i in coll_group:
-                        cac[i].old_x = cac[i].x + 100
-                        print('hi')
-                else:
-                    self.old_x = self.x + 100
-            elif self.xdir == self.ST_X_BAKWARD and event.key == SDLK_a:
-                if self.isColl:
-                    for i in coll_group:
-                        cac[i].old_x = cac[i].x - 100
-                else:
-                    self.old_x = self.x - 100
-            elif self.ydir == self.ST_Y_UP and event.key == SDLK_w:
-                if self.isColl:
-                    for i in coll_group:
-                        cac[i].old_y = cac[i].y + 100
-                else:
-                    self.old_y = self.y + 100
-            elif self.ydir == self.ST_Y_DOWN and event.key == SDLK_s:
-                if self.isColl:
-                    for i in coll_group:
-                        cac[i].old_y = cac[i].y - 100
-                else:
-                    self.old_y = self.y - 100
+        pass
 
     def render(self):
         self.draw_image(8, 100, 100)
@@ -264,7 +242,6 @@ def render():
         cac[i].render()
     make_group()
     test()
-
 
 
 def update():
