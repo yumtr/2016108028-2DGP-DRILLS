@@ -19,7 +19,17 @@ class Stage:
         self.map = 0
 
     def easy_stage(self):
-        self.map_image = 'Map_1.png'
+        self.map_image = 'Map_easy.png'
+        self.cac_count = 3
+        self.block_count = 18
+        self.cac_pos = [(6, 3), (5, 6), (3, 6)]
+        self.clear_pos = [(3, 3), (3, 4), (2, 4)]
+        self.stone_pos = [4, 5]
+        self.block_pos = [(7, 3), (8, 4), (8, 5), (7, 6), (6, 7), (5, 8), (4, 9), (3, 8), (2, 7),
+                          (1, 6), (0, 5), (0, 4), (1, 3), (2, 2), (3, 1), (4, 2), (5, 1), (6, 2)]
+
+    def normal_stage(self):
+        self.map_image = 'Map_normal.png'
         self.cac_count = 4
         self.block_count = 21
         self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
@@ -29,8 +39,8 @@ class Stage:
                           (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
                           (4, 8), (1, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
 
-    def normal_stage(self):
-        self.map_image = 'Map_2.png'
+    def hard_stage(self):
+        self.map_image = 'Map_normal.png'
         self.cac_count = 4
         self.block_count = 21
         self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
@@ -87,6 +97,20 @@ class Block:
         self.x = pos[1] * 100
         self.y = pos[0] * 100
 
+    def col2block(self, ano):
+        if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
+            ano.xdir = ano.ST_X_NONE
+            ano.x -= ano.speed
+        elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
+            ano.xdir = ano.ST_X_NONE
+            ano.x += ano.speed
+        elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
+            ano.ydir = ano.ST_Y_NONE
+            ano.y += ano.speed
+        elif self.rect[3] + ano.speed== ano.rect[1] and self.x == ano.x:
+            ano.ydir = ano.ST_Y_NONE
+            ano.y -= ano.speed
+
     def update(self):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
         if debug_mode:
@@ -106,8 +130,7 @@ class Player:
 
 class Stone(Player):
     def __init__(self):
-        self.xdir = self.ST_X_NONE
-        self.ydir = self.ST_Y_NONE
+        self.xdir, self.ydir = self.ST_X_NONE, self.ST_Y_NONE
         self.frame, self.obj = 0, 0
         self.x, self.y = 400, 300
         self.old_x, self.old_y = 0, 0
@@ -150,42 +173,33 @@ class Stone(Player):
         else:
             print('못움직임')
 
-    def 벽하고충돌(self, type):
-        # for i in range(block_count):
-        #     print(block_count)
-        #     if block[i].rect[0] == self.rect[2] and block[i].y == self.y and type == 0:
-        #         print('넌 못지나간다')
-        #         return False
-        #     elif block[i].rect[2] == self.rect[0] and block[i].y == self.y and type == 1:
-        #         print('넌 못지나간다2')
-        #         return False
-        #     elif block[i].rect[1] == self.rect[3] and block[i].x == self.x and type == 2:
-        #         print('넌 못지나간다3')
-        #         return False
-        #     elif block[i].rect[3] == self.rect[1] and block[i].x == self.x and type == 3:
-        #         print('넌 못지나간다4')
-        #         return False
-        #     else:
-        #         print('넌 지나간다', type, i)
-        #         return True
-        return True
-        pass
-
     def handle_Stone(self, event):
         if event.type == SDL_KEYDOWN:
             if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
-                if event.key == SDLK_d and self.벽하고충돌(0) and self.rect[2] < MAP_WIDTH - 50:
+                if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50:
                     self.xdir = self.ST_X_FORWARD
-                    self.old_x = self.x + 100
-                elif event.key == SDLK_a and self.벽하고충돌(1) and 50 < self.rect[0]:
+                    # 임시 테스트 쭉이동하도록 + 1000
+                    self.old_x = self.x + 1000
+                elif event.key == SDLK_a and 50 < self.rect[0]:
                     self.xdir = self.ST_X_BAKWARD
-                    self.old_x = self.x - 100
-                elif event.key == SDLK_w and self.벽하고충돌(2) and self.rect[1] < MAP_WIDTH - 150:
+                    self.old_x = self.x - 1000
+                elif event.key == SDLK_w and self.rect[1] < MAP_WIDTH - 150:
                     self.ydir = self.ST_Y_UP
-                    self.old_y = self.y + 100
-                elif event.key == SDLK_s and self.벽하고충돌(3) and 50 < self.rect[3]:
+                    self.old_y = self.y + 1000
+                elif event.key == SDLK_s and 50 < self.rect[3]:
                     self.ydir = self.ST_Y_DOWN
-                    self.old_y = self.y - 100
+                    self.old_y = self.y - 1000
+        elif event.type == SDL_KEYUP:
+            # 임시 테스트 쭉이동 ㅇㅇ
+            if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
+                if event.key == SDLK_d:
+                    self.old_x = self.x - (self.x % 100) + 100
+                elif event.key == SDLK_a:
+                    self.old_x = self.x - (self.x % 100)
+                elif event.key == SDLK_w:
+                    self.old_y = self.y - (self.y % 100) + 100
+                elif event.key == SDLK_s:
+                    self.old_y = self.y - (self.y % 100)
 
     def update(self):
         self.move()
@@ -193,14 +207,16 @@ class Stone(Player):
 
     def render(self):
         self.draw_image(20, 100, 100)
+        if debug_mode:
+            draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
 
 
 class Cactus(Stone):
     def __init__(self):
-        self.xdir = self.ST_X_NONE
-        self.ydir = self.ST_Y_NONE
-        self.x = random.randint(1, 8) * 100
-        self.y = random.randint(1, 7) * 100
+        self.xdir, self.ydir = self.ST_X_NONE, self.ST_Y_NONE
+        # self.x = random.randint(1, 8) * 100
+        # self.y = random.randint(1, 7) * 100
+        self.x, self.y = 0, 0
         self.old_x, self.old_y = 0, 0
         self.frame = 0
         self.speed = 20
@@ -235,11 +251,9 @@ class Cactus(Stone):
                     for i in cg.array:
                         cac[i].xdir = cac[i].ST_X_BAKWARD
                         cac[i].old_x = cac[i].x - 25
-                # TODO 그룹에 속해있지않은데 이미 그룹에 누가 있다면
                 else:
                     self.xdir = self.ST_X_BAKWARD
                     self.old_x = self.x - 25
-                # print('col 0')
             # 왼쪽 충돌
             elif self.rect[0] <= player.rect[2] and self.rect[2] > player.rect[
                 0] and player.xdir == player.ST_X_FORWARD:
@@ -250,7 +264,6 @@ class Cactus(Stone):
                 else:
                     self.xdir = self.ST_X_FORWARD
                     self.old_x = self.x + 25
-                # print('col 1')
 
         elif self.rect[0] == player.rect[0] and player.rect[2] == self.rect[2] and player.ydir != player.ST_Y_NONE:
             # 위 충돌
@@ -262,7 +275,6 @@ class Cactus(Stone):
                 else:
                     self.ydir = self.ST_Y_DOWN
                     self.old_y = self.y - 25
-                # print('col 2')
             # 아래 충돌
             elif self.rect[3] <= player.rect[1] and self.rect[1] > player.rect[3] and player.ydir == player.ST_Y_UP:
                 if self.isColl:
@@ -272,10 +284,6 @@ class Cactus(Stone):
                 else:
                     self.ydir = self.ST_Y_UP
                     self.old_y = self.y + 25
-                # print('col 3')
-
-    def handle_cactus(self, event):
-        pass
 
     def render(self):
         self.draw_image(8, 100, 100)
@@ -308,7 +316,7 @@ def handle_events():
                     cg.array.clear()
             elif event.key == SDLK_e:
                 print(player.rect)
-                for i in range(cac_count):
+                for i in range(game_stage.cac_count):
                     print(cac[i].rect)
             elif event.key == SDLK_1:
                 game_stage.easy_stage()
@@ -319,13 +327,13 @@ def handle_events():
                 game_stage.setting_stage(player, cac, block)
                 cg.array.clear()
             elif event.key == SDLK_3:
+                game_stage.hard_stage()
+                game_stage.setting_stage(player, cac, block)
                 cg.array.clear()
             elif event.key == SDLK_i:
                 debug_mode = not debug_mode
             else:
                 player.handle_Stone(event)
-                for i in range(game_stage.cac_count):
-                    cac[i].handle_cactus(event)
         elif event.type == SDL_KEYUP:
             player.handle_Stone(event)
 
@@ -366,7 +374,11 @@ def update():
         for j in range(game_stage.cac_count):
             if not i == j:
                 cac[i].New_coll(cac[j])
+        for k in range(game_stage.block_count):
+            block[k].col2block(cac[i])
+            # TODO 충돌 손봐줘야해요오오오옹로ㅓㅇ로ㅓ알노ㅓㅏ
     for i in range(game_stage.block_count):
+        block[i].col2block(player)
         block[i].update()
     make_group()
     game_stage.stage_clear(cac)
