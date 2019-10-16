@@ -4,7 +4,66 @@ import random
 
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
-cac_count = 4
+debug_mode = True
+
+
+class Stage:
+    def __init__(self):
+        self.cac_pos = []
+        self.block_pos = []
+        self.stone_pos = []
+        self.clear_pos = []
+        self.cac_count = 0
+        self.block_count = 0
+        self.map_image = 'hi'
+        self.map = 0
+
+    def easy_stage(self):
+        self.map_image = 'Map_1.png'
+        self.cac_count = 4
+        self.block_count = 21
+        self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
+        self.clear_pos = [(4, 4), (3, 4), (3, 5), (2, 4)]
+        self.stone_pos = [4, 5]
+        self.block_pos = [(8, 4), (4, 0), (3, 0), (0, 3), (0, 4), (0, 5), (0, 6),
+                          (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
+                          (4, 8), (1, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
+
+    def normal_stage(self):
+        self.map_image = 'Map_2.png'
+        self.cac_count = 4
+        self.block_count = 21
+        self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
+        self.clear_pos = [(4, 4), (3, 4), (3, 5), (2, 4)]
+        self.stone_pos = [4, 5]
+        self.block_pos = [(8, 4), (4, 0), (3, 0), (0, 3), (0, 4), (0, 5), (0, 6),
+                          (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
+                          (4, 8), (1, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
+
+    def setting_stage(self, stone, cac, block):
+        self.map = load_image(self.map_image)
+        stone.set_pos(self.stone_pos)
+        for i in range(self.cac_count):
+            cac.append(Cactus())
+            cac[i].__init__()
+            cac[i].set_image('Cactus test.png')
+            cac[i].set_pos(self.cac_pos[i])
+        for i in range(self.block_count):
+            block.append(Block())
+            block[i].__init__()
+            block[i].set_pos(self.block_pos[i])
+
+    def stage_clear(self, cac):
+        cac_array = []
+        for i in range(self.cac_count):
+            cac_array.append((cac[i].get_pos()))
+        self.clear_pos.sort()
+        cac_array.sort()
+        if self.clear_pos == cac_array:
+            print('클리어')
+
+    def draw_stage(self):
+        self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
 
 
 class Group:
@@ -16,6 +75,22 @@ class Group:
 
     def print_g(self):
         print(self.array)
+
+
+class Block:
+    def __init__(self):
+        self.x, self.y = 400, 300
+        self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
+        pass
+
+    def set_pos(self, pos):
+        self.x = pos[1] * 100
+        self.y = pos[0] * 100
+
+    def update(self):
+        self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
+        if debug_mode:
+            draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
 
 
 class Player:
@@ -47,6 +122,9 @@ class Stone(Player):
         self.x = pos[1] * 100
         self.y = pos[0] * 100
 
+    def get_pos(self):
+        return self.y / 100, self.x / 100
+
     def draw_image(self, count, x_size, y_size):
         self.obj.clip_draw(self.frame * x_size, 0 * 1, x_size, y_size, self.x, self.y)
         self.frame = (self.frame + 1) % count
@@ -72,19 +150,40 @@ class Stone(Player):
         else:
             print('못움직임')
 
+    def 벽하고충돌(self, type):
+        # for i in range(block_count):
+        #     print(block_count)
+        #     if block[i].rect[0] == self.rect[2] and block[i].y == self.y and type == 0:
+        #         print('넌 못지나간다')
+        #         return False
+        #     elif block[i].rect[2] == self.rect[0] and block[i].y == self.y and type == 1:
+        #         print('넌 못지나간다2')
+        #         return False
+        #     elif block[i].rect[1] == self.rect[3] and block[i].x == self.x and type == 2:
+        #         print('넌 못지나간다3')
+        #         return False
+        #     elif block[i].rect[3] == self.rect[1] and block[i].x == self.x and type == 3:
+        #         print('넌 못지나간다4')
+        #         return False
+        #     else:
+        #         print('넌 지나간다', type, i)
+        #         return True
+        return True
+        pass
+
     def handle_Stone(self, event):
         if event.type == SDL_KEYDOWN:
             if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
-                if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50:
+                if event.key == SDLK_d and self.벽하고충돌(0) and self.rect[2] < MAP_WIDTH - 50:
                     self.xdir = self.ST_X_FORWARD
                     self.old_x = self.x + 100
-                elif event.key == SDLK_a and 50 < self.rect[0]:
+                elif event.key == SDLK_a and self.벽하고충돌(1) and 50 < self.rect[0]:
                     self.xdir = self.ST_X_BAKWARD
                     self.old_x = self.x - 100
-                elif event.key == SDLK_w and self.rect[1] < MAP_WIDTH - 150:
+                elif event.key == SDLK_w and self.벽하고충돌(2) and self.rect[1] < MAP_WIDTH - 150:
                     self.ydir = self.ST_Y_UP
                     self.old_y = self.y + 100
-                elif event.key == SDLK_s and 50 < self.rect[3]:
+                elif event.key == SDLK_s and self.벽하고충돌(3) and 50 < self.rect[3]:
                     self.ydir = self.ST_Y_DOWN
                     self.old_y = self.y - 100
 
@@ -108,7 +207,6 @@ class Cactus(Stone):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
         self.isColl = False
         self.isMovable = True
-
 
     def check_col(self, ano):
         if self.rect[0] == ano.rect[2] and self.y == ano.y:
@@ -181,6 +279,8 @@ class Cactus(Stone):
 
     def render(self):
         self.draw_image(8, 100, 100)
+        if debug_mode:
+            draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
 
     def update(self):
         self.move()
@@ -194,7 +294,7 @@ def exit():
 
 
 def handle_events():
-    global running, cac_count
+    global debug_mode
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -202,79 +302,74 @@ def handle_events():
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 exit()
-            elif event.key == SDLK_q:
-                for i in range(cac_count):
+            elif event.key == SDLK_p:
+                for i in range(game_stage.cac_count):
                     cac[i].__init__()
                     cg.array.clear()
             elif event.key == SDLK_e:
                 print(player.rect)
                 for i in range(cac_count):
                     print(cac[i].rect)
-            elif event.key == SDLK_g:
-                player.set_pos((4, 5))
-                for i in range(cac_count):
-                    cac[i].__init__()
-                    cac[i].set_pos(cac_pos[i])
+            elif event.key == SDLK_1:
+                game_stage.easy_stage()
+                game_stage.setting_stage(player, cac, block)
                 cg.array.clear()
+            elif event.key == SDLK_2:
+                game_stage.normal_stage()
+                game_stage.setting_stage(player, cac, block)
+                cg.array.clear()
+            elif event.key == SDLK_3:
+                cg.array.clear()
+            elif event.key == SDLK_i:
+                debug_mode = not debug_mode
             else:
                 player.handle_Stone(event)
-                for i in range(cac_count):
+                for i in range(game_stage.cac_count):
                     cac[i].handle_cactus(event)
         elif event.type == SDL_KEYUP:
             player.handle_Stone(event)
 
 
 open_canvas(MAP_WIDTH, MAP_HEIGHT)
+running = True
 player = Stone()
 player.set_image('stone.png')
 cac = []
-for i in range(cac_count):
-    cac.append(Cactus())
-    cac[i].set_image('Cactus test.png')
-Map_Test = load_image('Map_1.png')
-running = True
+block = []
+game_stage = Stage()
+game_stage.easy_stage()
+game_stage.setting_stage(player, cac, block)
+
 cg = Group()
-
-cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
-
-
-def test_coll():
-    for i in range(cac_count):
-        if len(cg.array) == 0:
-            make_group()
-        else:
-            for j in cg.array:
-                if i != j and cac[i].check_col(cac[j]) and not i in cg.array:
-                    cg.array.append(i)
-                    cg.print_g()
 
 
 def make_group():
-    for j in range(cac_count):
-        if cac[j].isColl and not j in cg.array:
+    for j in range(game_stage.cac_count):
+        if cac[j].isColl and j not in cg.array:
             cg.array.append(j)
             cg.print_g()
 
 
 def render():
-    Map_Test.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
+    game_stage.draw_stage()
     player.render()
 
-    for i in range(0, cac_count):
-        draw_rectangle(cac[i].rect[0], cac[i].rect[1], cac[i].rect[2], cac[i].rect[3])
+    for i in range(game_stage.cac_count):
         cac[i].render()
-    make_group()
 
 
 def update():
     player.update()
-    for i in range(cac_count):
+    for i in range(game_stage.cac_count):
         cac[i].update()
         cac[i].collision()
-        for j in range(cac_count):
+        for j in range(game_stage.cac_count):
             if not i == j:
                 cac[i].New_coll(cac[j])
-
+    for i in range(game_stage.block_count):
+        block[i].update()
+    make_group()
+    game_stage.stage_clear(cac)
     handle_events()
     update_canvas()
 
