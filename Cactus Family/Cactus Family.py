@@ -1,10 +1,42 @@
 # coding=utf-8
 from pico2d import *
 import random
+import threading
 
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
 debug_mode = True
+
+clear = False
+
+
+class Clear_Scene:
+    def __init__(self):
+        self.scene = load_image('Clear.png')
+        self.count = 0
+        self.timer = 0
+
+    def Win(self):
+        global clear
+        if self.count == 0:
+            self.timer = threading.Timer(1, self.Win)
+            self.timer.start()
+        self.count += 1
+
+        if self.count == 10:
+            self.timer.cancel()
+            self.count = 0
+            print(self.count)
+            clear = False
+        else:
+            self.draw_scene()
+            game_stage.normal_stage()
+            game_stage.setting_stage(player, cac, block)
+            cg.array.clear()
+            cg.not_group.clear()
+
+    def draw_scene(self):
+        self.scene.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
 
 
 class Stage:
@@ -17,6 +49,17 @@ class Stage:
         self.block_count = 0
         self.map_image = 'hi'
         self.map = 0
+
+    def test_stage(self):
+        self.map_image = 'Map_test.png'
+        self.cac_count = 6
+        self.block_count = 30
+        self.cac_pos = [(4, 3), (6, 7), (5, 7), (4, 7), (3, 7), (2, 7)]
+        self.clear_pos = []
+        self.stone_pos = [4, 5]
+        self.block_pos = [(8, 1), (8, 2), (8, 3), (8, 4), (8, 5), (8, 6), (8, 7), (8, 8), (7, 9), (6, 9), (5, 9),
+                          (4, 9), (3, 9), (2, 9), (1, 9), (0, 8), (0, 7), (0, 6), (0, 5), (0, 4), (0, 3), (0, 2),
+                          (0, 1), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0)]
 
     def easy_stage(self):
         self.map_image = 'Map_easy.png'
@@ -35,7 +78,7 @@ class Stage:
         self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
         self.clear_pos = [(4, 4), (3, 4), (3, 5), (2, 4)]
         self.stone_pos = [4, 5]
-        self.block_pos = [(8, 4), (4, 0), (3, 0), (0, 3), (0, 4), (0, 5), (0, 6),
+        self.block_pos = [(8, 4), (4, 0), (3, 0), (0, 3), (1, 4), (0, 5), (0, 6),
                           (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
                           (4, 8), (1, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
 
@@ -70,7 +113,8 @@ class Stage:
         self.clear_pos.sort()
         cac_array.sort()
         if self.clear_pos == cac_array:
-            print('클리어')
+            global clear
+            clear = True
 
     def draw_stage(self):
         self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
@@ -93,7 +137,6 @@ class Block:
     def __init__(self):
         self.x, self.y = 400, 300
         self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
-        pass
 
     def set_pos(self, pos):
         self.x = pos[1] * 100
@@ -142,32 +185,24 @@ class Block:
         if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
             player.xdir = player.ST_X_NONE
             player.x -= (player.speed + 20)
-            # ano.xdir = ano.ST_X_NONE
-            # ano.x -= ano.speed
             for i in cg.array:
                 cac[i].xdir = cac[i].ST_X_NONE
                 cac[i].x -= cac[i].speed
         elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
             player.xdir = player.ST_X_NONE
             player.x += (player.speed + 20)
-            # ano.xdir = ano.ST_X_NONE
-            # ano.x += ano.speed
             for i in cg.array:
                 cac[i].xdir = cac[i].ST_X_NONE
                 cac[i].x += cac[i].speed
         elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
             player.ydir = player.ST_Y_NONE
             player.y += (player.speed + 20)
-            # ano.ydir = ano.ST_Y_NONE
-            # ano.y += ano.speed
             for i in cg.array:
                 cac[i].ydir = cac[i].ST_Y_NONE
                 cac[i].y += cac[i].speed
         elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
             player.ydir = player.ST_Y_NONE
             player.y -= (player.speed + 20)
-            # ano.ydir = ano.ST_Y_NONE
-            # ano.y -= ano.speed
             for i in cg.array:
                 cac[i].ydir = cac[i].ST_Y_NONE
                 cac[i].y -= cac[i].speed
@@ -276,8 +311,6 @@ class Stone(Player):
 class Cactus(Stone):
     def __init__(self):
         self.xdir, self.ydir = self.ST_X_NONE, self.ST_Y_NONE
-        # self.x = random.randint(1, 8) * 100
-        # self.y = random.randint(1, 7) * 100
         self.x, self.y = 0, 0
         self.old_x, self.old_y = 0, 0
         self.frame = 0
@@ -285,6 +318,10 @@ class Cactus(Stone):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
         self.isColl = False
         self.isMovable = True
+
+    def random_pos(self):
+        self.x = random.randint(1, 8) * 100
+        self.y = random.randint(1, 7) * 100
 
     def check_col(self, ano):
         if self.rect[0] == ano.rect[2] and self.y == ano.y:
@@ -394,6 +431,13 @@ def handle_events():
                 game_stage.setting_stage(player, cac, block)
                 cg.array.clear()
                 cg.not_group.clear()
+            elif event.key == SDLK_t:
+                game_stage.test_stage()
+                game_stage.setting_stage(player, cac, block)
+                cg.array.clear()
+                cg.not_group.clear()
+                for i in range(game_stage.cac_count):
+                    cac[i].random_pos()
             elif event.key == SDLK_i:
                 debug_mode = not debug_mode
                 cg.print_g()
@@ -414,6 +458,7 @@ game_stage.easy_stage()
 game_stage.setting_stage(player, cac, block)
 
 cg = Group()
+scene = Clear_Scene()
 
 
 def make_group():
@@ -429,11 +474,14 @@ def make_group():
 
 
 def render():
+    global clear
     game_stage.draw_stage()
     player.render()
-
     for i in range(game_stage.cac_count):
         cac[i].render()
+    if clear:
+        scene.Win()
+
 
 
 def update():
@@ -441,7 +489,6 @@ def update():
     # 전체 선인장
     for i in range(game_stage.cac_count):
         cac[i].update()
-        # cac[i].collision()
         for j in range(game_stage.cac_count):
             if not i == j:
                 cac[i].New_coll(cac[j])
@@ -455,12 +502,13 @@ def update():
     # 그룹안된 선인장
     for i in cg.not_group:
         cac[i].collision()
-        for k in range(game_stage.block_count):
-            block[k].col2blockPlayer(cac[i])
+        for j in range(game_stage.block_count):
+            block[j].col2blockPlayer(cac[i])
 
     for i in range(game_stage.block_count):
         block[i].col2block(player)
         block[i].update()
+
     make_group()
     game_stage.stage_clear(cac)
     handle_events()
