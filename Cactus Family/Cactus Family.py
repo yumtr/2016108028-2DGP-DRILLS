@@ -50,23 +50,23 @@ class Stage:
                           (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
                           (4, 8), (1, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
 
-    def setting_stage(self, stone, cac, block):
+    def setting_stage(self, stone, cac_o, block_o):
         self.map = load_image(self.map_image)
         stone.set_pos(self.stone_pos)
         for i in range(self.cac_count):
-            cac.append(Cactus())
-            cac[i].__init__()
-            cac[i].set_image('Cactus test.png')
-            cac[i].set_pos(self.cac_pos[i])
+            cac_o.append(Cactus())
+            cac_o[i].__init__()
+            cac_o[i].set_image('Cactus test.png')
+            cac_o[i].set_pos(self.cac_pos[i])
         for i in range(self.block_count):
-            block.append(Block())
-            block[i].__init__()
-            block[i].set_pos(self.block_pos[i])
+            block_o.append(Block())
+            block_o[i].__init__()
+            block_o[i].set_pos(self.block_pos[i])
 
-    def stage_clear(self, cac):
+    def stage_clear(self, cac_o):
         cac_array = []
         for i in range(self.cac_count):
-            cac_array.append((cac[i].get_pos()))
+            cac_array.append((cac_o[i].get_pos()))
         self.clear_pos.sort()
         cac_array.sort()
         if self.clear_pos == cac_array:
@@ -79,12 +79,14 @@ class Stage:
 class Group:
     def __init__(self):
         self.array = []
+        self.not_group = []
 
     def partition(self):
         pass
 
     def print_g(self):
-        print(self.array)
+        print('우린그룹', self.array)
+        print('그룹에 안속함', self.not_group)
 
 
 class Block:
@@ -107,9 +109,68 @@ class Block:
         elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
             ano.ydir = ano.ST_Y_NONE
             ano.y += ano.speed
-        elif self.rect[3] + ano.speed== ano.rect[1] and self.x == ano.x:
+        elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
             ano.ydir = ano.ST_Y_NONE
             ano.y -= ano.speed
+
+    def col2blockPlayer(self, ano):
+        if not ano.isColl:
+            if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
+                player.xdir = player.ST_X_NONE
+                player.x -= player.speed + 20
+                ano.xdir = ano.ST_X_NONE
+                ano.x -= ano.speed
+            elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
+                player.xdir = player.ST_X_NONE
+                player.x += player.speed + 20
+                ano.xdir = ano.ST_X_NONE
+                ano.x += ano.speed
+
+            elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
+                player.ydir = player.ST_Y_NONE
+                player.y += player.speed + 20
+                ano.ydir = ano.ST_Y_NONE
+                ano.y += ano.speed
+
+            elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
+                player.ydir = player.ST_Y_NONE
+                player.y -= player.speed + 20
+                ano.ydir = ano.ST_Y_NONE
+                ano.y -= ano.speed
+
+    def cg2blockPlayer(self, ano):
+        if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
+            player.xdir = player.ST_X_NONE
+            player.x -= (player.speed + 20)
+            # ano.xdir = ano.ST_X_NONE
+            # ano.x -= ano.speed
+            for i in cg.array:
+                cac[i].xdir = cac[i].ST_X_NONE
+                cac[i].x -= cac[i].speed
+        elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
+            player.xdir = player.ST_X_NONE
+            player.x += (player.speed + 20)
+            # ano.xdir = ano.ST_X_NONE
+            # ano.x += ano.speed
+            for i in cg.array:
+                cac[i].xdir = cac[i].ST_X_NONE
+                cac[i].x += cac[i].speed
+        elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
+            player.ydir = player.ST_Y_NONE
+            player.y += (player.speed + 20)
+            # ano.ydir = ano.ST_Y_NONE
+            # ano.y += ano.speed
+            for i in cg.array:
+                cac[i].ydir = cac[i].ST_Y_NONE
+                cac[i].y += cac[i].speed
+        elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
+            player.ydir = player.ST_Y_NONE
+            player.y -= (player.speed + 20)
+            # ano.ydir = ano.ST_Y_NONE
+            # ano.y -= ano.speed
+            for i in cg.array:
+                cac[i].ydir = cac[i].ST_Y_NONE
+                cac[i].y -= cac[i].speed
 
     def update(self):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
@@ -179,27 +240,28 @@ class Stone(Player):
                 if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50:
                     self.xdir = self.ST_X_FORWARD
                     # 임시 테스트 쭉이동하도록 + 1000
-                    self.old_x = self.x + 1000
+                    self.old_x = self.x + 100
                 elif event.key == SDLK_a and 50 < self.rect[0]:
                     self.xdir = self.ST_X_BAKWARD
-                    self.old_x = self.x - 1000
+                    self.old_x = self.x - 100
                 elif event.key == SDLK_w and self.rect[1] < MAP_WIDTH - 150:
                     self.ydir = self.ST_Y_UP
-                    self.old_y = self.y + 1000
+                    self.old_y = self.y + 100
                 elif event.key == SDLK_s and 50 < self.rect[3]:
                     self.ydir = self.ST_Y_DOWN
-                    self.old_y = self.y - 1000
+                    self.old_y = self.y - 100
         elif event.type == SDL_KEYUP:
             # 임시 테스트 쭉이동 ㅇㅇ
-            if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
-                if event.key == SDLK_d:
-                    self.old_x = self.x - (self.x % 100) + 100
-                elif event.key == SDLK_a:
-                    self.old_x = self.x - (self.x % 100)
-                elif event.key == SDLK_w:
-                    self.old_y = self.y - (self.y % 100) + 100
-                elif event.key == SDLK_s:
-                    self.old_y = self.y - (self.y % 100)
+            # if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
+            #     if event.key == SDLK_d:
+            #         self.old_x = self.x - (self.x % 100) + 100
+            #     elif event.key == SDLK_a:
+            #         self.old_x = self.x - (self.x % 100)
+            #     elif event.key == SDLK_w:
+            #         self.old_y = self.y - (self.y % 100) + 100
+            #     elif event.key == SDLK_s:
+            #         self.old_y = self.y - (self.y % 100)
+            pass
 
     def update(self):
         self.move()
@@ -255,8 +317,8 @@ class Cactus(Stone):
                     self.xdir = self.ST_X_BAKWARD
                     self.old_x = self.x - 25
             # 왼쪽 충돌
-            elif self.rect[0] <= player.rect[2] and self.rect[2] > player.rect[
-                0] and player.xdir == player.ST_X_FORWARD:
+            elif self.rect[0] <= player.rect[2] and \
+                    self.rect[2] > player.rect[0] and player.xdir == player.ST_X_FORWARD:
                 if self.isColl:
                     for i in cg.array:
                         cac[i].xdir = cac[i].ST_X_FORWARD
@@ -264,7 +326,6 @@ class Cactus(Stone):
                 else:
                     self.xdir = self.ST_X_FORWARD
                     self.old_x = self.x + 25
-
         elif self.rect[0] == player.rect[0] and player.rect[2] == self.rect[2] and player.ydir != player.ST_Y_NONE:
             # 위 충돌
             if self.rect[1] >= player.rect[3] and self.rect[3] < player.rect[1] and player.ydir == player.ST_Y_DOWN:
@@ -322,16 +383,20 @@ def handle_events():
                 game_stage.easy_stage()
                 game_stage.setting_stage(player, cac, block)
                 cg.array.clear()
+                cg.not_group.clear()
             elif event.key == SDLK_2:
                 game_stage.normal_stage()
                 game_stage.setting_stage(player, cac, block)
                 cg.array.clear()
+                cg.not_group.clear()
             elif event.key == SDLK_3:
                 game_stage.hard_stage()
                 game_stage.setting_stage(player, cac, block)
                 cg.array.clear()
+                cg.not_group.clear()
             elif event.key == SDLK_i:
                 debug_mode = not debug_mode
+                cg.print_g()
             else:
                 player.handle_Stone(event)
         elif event.type == SDL_KEYUP:
@@ -355,7 +420,12 @@ def make_group():
     for j in range(game_stage.cac_count):
         if cac[j].isColl and j not in cg.array:
             cg.array.append(j)
-            cg.print_g()
+            cg.array.sort()
+        if j not in cg.not_group:
+            cg.not_group.append(j)
+
+    for i in range(len(cg.array)):
+        cg.not_group.remove(cg.array[i])
 
 
 def render():
@@ -368,15 +438,23 @@ def render():
 
 def update():
     player.update()
+    # 전체 선인장
     for i in range(game_stage.cac_count):
         cac[i].update()
         cac[i].collision()
-        for j in range(game_stage.cac_count):
+        for j in cg.not_group:
             if not i == j:
                 cac[i].New_coll(cac[j])
-        for k in range(game_stage.block_count):
-            block[k].col2block(cac[i])
             # TODO 충돌 손봐줘야해요오오오옹로ㅓㅇ로ㅓ알노ㅓㅏ
+    # 그룹된 선인장
+    for i in cg.array:
+        for j in range(game_stage.block_count):
+            block[j].cg2blockPlayer(cac[i])
+    # 그룹안된 선인장
+    for i in cg.not_group:
+        for k in range(game_stage.block_count):
+            block[k].col2blockPlayer(cac[i])
+
     for i in range(game_stage.block_count):
         block[i].col2block(player)
         block[i].update()
