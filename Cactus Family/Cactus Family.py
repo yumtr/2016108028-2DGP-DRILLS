@@ -235,7 +235,7 @@ class Stone(Player):
             print('못움직임')
 
     def handle_Stone(self, event):
-        if event.type == SDL_KEYDOWN:
+        if event.type == SDL_KEYDOWN and self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
             if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
                 if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50:
                     self.xdir = self.ST_X_FORWARD
@@ -441,17 +441,20 @@ def update():
     # 전체 선인장
     for i in range(game_stage.cac_count):
         cac[i].update()
-        cac[i].collision()
-        for j in cg.not_group:
+        # cac[i].collision()
+        for j in range(game_stage.cac_count):
             if not i == j:
                 cac[i].New_coll(cac[j])
             # TODO 충돌 손봐줘야해요오오오옹로ㅓㅇ로ㅓ알노ㅓㅏ
     # 그룹된 선인장
     for i in cg.array:
+        cac[i].collision()
         for j in range(game_stage.block_count):
             block[j].cg2blockPlayer(cac[i])
+
     # 그룹안된 선인장
     for i in cg.not_group:
+        cac[i].collision()
         for k in range(game_stage.block_count):
             block[k].col2blockPlayer(cac[i])
 
