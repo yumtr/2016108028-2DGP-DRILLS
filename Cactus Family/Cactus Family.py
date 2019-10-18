@@ -5,9 +5,10 @@ import threading
 
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
-debug_mode = True
+debug_mode = False
 
 clear = False
+now_stage = 1
 
 
 class Clear_Scene:
@@ -23,17 +24,16 @@ class Clear_Scene:
             self.timer.start()
         self.count += 1
 
-        if self.count == 10:
+        if self.count == 15:
             self.timer.cancel()
             self.count = 0
             print(self.count)
             clear = False
+            global now_stage
+            now_stage += 1
+            change_stage(now_stage)
         else:
             self.draw_scene()
-            game_stage.normal_stage()
-            game_stage.setting_stage(player, cac, block)
-            cg.array.clear()
-            cg.not_group.clear()
 
     def draw_scene(self):
         self.scene.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
@@ -80,10 +80,10 @@ class Stage:
         self.stone_pos = [4, 5]
         self.block_pos = [(8, 4), (4, 0), (3, 0), (0, 3), (1, 4), (0, 5), (0, 6),
                           (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
-                          (4, 8), (1, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
+                          (4, 8), (0, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
 
     def hard_stage(self):
-        self.map_image = 'Map_normal.png'
+        self.map_image = 'Map_hard.png'
         self.cac_count = 4
         self.block_count = 21
         self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
@@ -399,8 +399,24 @@ def exit():
     running = False
 
 
+def change_stage(level):
+    if level == 1:
+        game_stage.easy_stage()
+    elif level == 2:
+        game_stage.normal_stage()
+    elif level == 3:
+        game_stage.hard_stage()
+    elif level == 't':
+        game_stage.test_stage()
+    else:
+        game_stage.test_stage()
+    game_stage.setting_stage(player, cac, block)
+    cg.array.clear()
+    cg.not_group.clear()
+
+
 def handle_events():
-    global debug_mode
+    global debug_mode, now_stage
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -408,34 +424,19 @@ def handle_events():
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 exit()
-            elif event.key == SDLK_p:
-                for i in range(game_stage.cac_count):
-                    cac[i].__init__()
-                    cg.array.clear()
-            elif event.key == SDLK_e:
-                print(player.rect)
-                for i in range(game_stage.cac_count):
-                    print(cac[i].rect)
+            elif event.key == SDLK_r:
+                change_stage(now_stage)
             elif event.key == SDLK_1:
-                game_stage.easy_stage()
-                game_stage.setting_stage(player, cac, block)
-                cg.array.clear()
-                cg.not_group.clear()
+                now_stage = 1
+                change_stage(now_stage)
             elif event.key == SDLK_2:
-                game_stage.normal_stage()
-                game_stage.setting_stage(player, cac, block)
-                cg.array.clear()
-                cg.not_group.clear()
+                now_stage = 2
+                change_stage(now_stage)
             elif event.key == SDLK_3:
-                game_stage.hard_stage()
-                game_stage.setting_stage(player, cac, block)
-                cg.array.clear()
-                cg.not_group.clear()
+                now_stage = 3
+                change_stage(now_stage)
             elif event.key == SDLK_t:
-                game_stage.test_stage()
-                game_stage.setting_stage(player, cac, block)
-                cg.array.clear()
-                cg.not_group.clear()
+                change_stage('t')
                 for i in range(game_stage.cac_count):
                     cac[i].random_pos()
             elif event.key == SDLK_i:
@@ -483,7 +484,6 @@ def render():
         scene.Win()
 
 
-
 def update():
     player.update()
     # 전체 선인장
@@ -516,6 +516,7 @@ def update():
 
 
 while running:
+
     clear_canvas()
     render()
     update()

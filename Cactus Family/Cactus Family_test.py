@@ -231,7 +231,7 @@ cac = []
 for i in range(cac_count):
     cac.append(Cactus())
     cac[i].set_image('Cactus test.png')
-Map_Test = load_image('Map_1.png')
+Map_Test = load_image('Map_test.png')
 running = True
 cg = Group()
 
@@ -254,6 +254,7 @@ def make_group():
         if cac[j].isColl and not j in cg.array:
             cg.array.append(j)
             cg.print_g()
+
 
 
 def render():
@@ -279,8 +280,23 @@ def update():
     update_canvas()
 
 
+
 while running:
     clear_canvas()
     render()
     update()
     delay(0.05)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
