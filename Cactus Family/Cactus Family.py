@@ -496,6 +496,7 @@ def update():
     # 그룹된 선인장
     for i in cg.array:
         cac[i].collision()
+        cac[i].set_image('Cactus group.png')
         for j in range(game_stage.block_count):
             block[j].cg2blockPlayer(cac[i])
 
