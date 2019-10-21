@@ -32,8 +32,10 @@ class Clear_Scene:
             global now_stage
             now_stage += 1
             change_stage(now_stage)
+            player.isMovable = True
         else:
             self.draw_scene()
+            player.isMovable = False
 
     def draw_scene(self):
         self.scene.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
@@ -99,7 +101,6 @@ class Stage:
         for i in range(self.cac_count):
             cac_o.append(Cactus())
             cac_o[i].__init__()
-            cac_o[i].set_image('Cactus test.png')
             cac_o[i].set_pos(self.cac_pos[i])
         for i in range(self.block_count):
             block_o.append(Block())
@@ -137,6 +138,7 @@ class Block:
     def __init__(self):
         self.x, self.y = 400, 300
         self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
+        self.hi = 0
 
     def set_pos(self, pos):
         self.x = pos[1] * 100
@@ -181,13 +183,35 @@ class Block:
                 ano.ydir = ano.ST_Y_NONE
                 ano.y -= ano.speed
 
+    def col_cnt(self):
+        bye = 0
+        for i in cg.array:
+            # 각각 그룹선인장들이 벽과의 충돌 수의 합이 1이면
+            bye += cac[i].get_c2b()
+        self.hi = bye
+
     def cg2blockPlayer(self, ano):
+        # TODO 벽이랑 선인장이랑 충돌 개수에따라 ㅇㅇ 제발
         if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
             player.xdir = player.ST_X_NONE
             player.x -= (player.speed + 20)
             for i in cg.array:
                 cac[i].xdir = cac[i].ST_X_NONE
                 cac[i].x -= cac[i].speed
+        
+            # 닫아있는 면적이 하나일때
+            # if self.hi == 1:
+            #     player.x -= (player.speed + 20)
+            #     for i in cg.array:
+            #         cac[i].xdir = cac[i].ST_X_NONE
+            #         cac[i].x -= cac[i].speed
+            #
+            # else:
+            #     player.x -= (player.speed)
+            #     for i in cg.array:
+            #         cac[i].xdir = cac[i].ST_X_NONE
+            #     ano.x -= ano.speed
+
         elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
             player.xdir = player.ST_X_NONE
             player.x += (player.speed + 20)
@@ -244,8 +268,8 @@ class Stone(Player):
     def get_pos(self):
         return self.y / 100, self.x / 100
 
-    def draw_image(self, count, x_size, y_size):
-        self.obj.clip_draw(self.frame * x_size, 0 * 1, x_size, y_size, self.x, self.y)
+    def draw_image(self, count, x_size, y_size, low):
+        self.obj.clip_draw(self.frame * x_size, low * x_size, x_size, y_size, self.x, self.y)
         self.frame = (self.frame + 1) % count
 
     def move(self):
@@ -266,8 +290,7 @@ class Stone(Player):
                 self.y -= self.speed
                 if self.y <= self.old_y:
                     self.ydir = self.ST_Y_NONE
-        else:
-            print('못움직임')
+
 
     def handle_Stone(self, event):
         if event.type == SDL_KEYDOWN and self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
@@ -303,7 +326,7 @@ class Stone(Player):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
 
     def render(self):
-        self.draw_image(20, 100, 100)
+        self.draw_image(20, 100, 100, 0)
         if debug_mode:
             draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
 
@@ -311,6 +334,7 @@ class Stone(Player):
 class Cactus(Stone):
     def __init__(self):
         self.xdir, self.ydir = self.ST_X_NONE, self.ST_Y_NONE
+        self.obj = load_image('Cactus_sprite.png')
         self.x, self.y = 0, 0
         self.old_x, self.old_y = 0, 0
         self.frame = 0
@@ -324,12 +348,25 @@ class Cactus(Stone):
         self.y = random.randint(1, 7) * 100
 
     def check_col(self, ano):
+        print('?')
         if self.rect[0] == ano.rect[2] and self.y == ano.y:
+            return True
+        elif self.rect[2] == ano.rect[0] and self.y == ano.y:
             return True
         elif self.rect[1] == ano.rect[3] and self.x == ano.x:
             return True
+        elif self.rect[3] == ano.rect[1] and self.x == ano.x:
+            return True
         else:
             return False
+
+    def get_c2b(self):
+        c2b_cnt = 0
+        for i in range(game_stage.block_count):
+            if self.check_col(block[i]):
+                c2b_cnt += 1
+                print(c2b_cnt, '제발 잘되니')
+        return c2b_cnt
 
     def New_coll(self, ano):
         if 1:
@@ -384,7 +421,10 @@ class Cactus(Stone):
                     self.old_y = self.y + 25
 
     def render(self):
-        self.draw_image(8, 100, 100)
+        if self.isColl:
+            self.draw_image(8, 100, 100, 0)
+        else:
+            self.draw_image(8, 100, 100, 1)
         if debug_mode:
             draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
 
@@ -441,6 +481,7 @@ def handle_events():
                     cac[i].random_pos()
             elif event.key == SDLK_i:
                 debug_mode = not debug_mode
+                print(player.x, player.y)
                 cg.print_g()
             else:
                 player.handle_Stone(event)
@@ -492,11 +533,12 @@ def update():
         for j in range(game_stage.cac_count):
             if not i == j:
                 cac[i].New_coll(cac[j])
-            # TODO 충돌 손봐줘야해요오오오옹로ㅓㅇ로ㅓ알노ㅓㅏ
+            # TODO 충돌 손봐줘야해오오오옹로ㅓㅇ로ㅓ알노ㅓㅏ
     # 그룹된 선인장
     for i in cg.array:
         cac[i].collision()
-        cac[i].set_image('Cactus group.png')
+
+        # cac[i].set_image('Cactus group.png')
         for j in range(game_stage.block_count):
             block[j].cg2blockPlayer(cac[i])
 
