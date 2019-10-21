@@ -4,11 +4,16 @@ import main_state
 
 
 image = None
+is_draw = False
 
+def timer():
+    global is_draw
+    delay(0.1)
+    is_draw = not is_draw
 
 def enter():
     global image
-    image = load_image('pause.png')
+    image = load_image('pause2.png')
 
 
 def exit():
@@ -22,7 +27,11 @@ def update():
 
 def draw():
     clear_canvas()
-    image.draw(400, 300)
+    main_state.boy.draw()
+    main_state.grass.draw()
+    timer()
+    if is_draw:
+        image.draw(400, 300)
     update_canvas()
 
 
