@@ -3,6 +3,10 @@ from pico2d import *
 import random
 import threading
 
+import game_framework
+#import title_state
+import pause_state
+
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
 debug_mode = False
@@ -251,12 +255,14 @@ class Player:
 class Stone(Player):
     def __init__(self):
         self.xdir, self.ydir = self.ST_X_NONE, self.ST_Y_NONE
-        self.frame, self.obj = 0, 0
+        self.frame = 0
+        self.obj = load_image('stone_sprites.png')
         self.x, self.y = 400, 300
         self.old_x, self.old_y = 0, 0
         self.speed = 20
         self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
         self.isMovable = True
+        self.anime_cnt = 0
 
     def set_image(self, filename):
         self.obj = load_image(filename)
@@ -326,7 +332,12 @@ class Stone(Player):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
 
     def render(self):
-        self.draw_image(20, 100, 100, 0)
+        self.anime_cnt += 1
+        if self.anime_cnt == 10:
+            self.draw_image(4, 100, 100, 0)
+            self.anime_cnt = 0
+        else:
+            self.draw_image(15, 100, 100, 1)
         if debug_mode:
             draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
 
@@ -455,6 +466,18 @@ def change_stage(level):
     cg.not_group.clear()
 
 
+def make_group():
+    for j in range(game_stage.cac_count):
+        if cac[j].isColl and j not in cg.array:
+            cg.array.append(j)
+            cg.array.sort()
+        if j not in cg.not_group:
+            cg.not_group.append(j)
+
+    for i in range(len(cg.array)):
+        cg.not_group.remove(cg.array[i])
+
+
 def handle_events():
     global debug_mode, now_stage
     events = get_events()
@@ -483,6 +506,8 @@ def handle_events():
                 debug_mode = not debug_mode
                 print(player.x, player.y)
                 cg.print_g()
+            elif event.key == SDLK_p:
+                game_framework.push(pause_state)
             else:
                 player.handle_Stone(event)
         elif event.type == SDL_KEYUP:
@@ -491,38 +516,35 @@ def handle_events():
 
 open_canvas(MAP_WIDTH, MAP_HEIGHT)
 running = True
-player = Stone()
-player.set_image('stone.png')
-cac = []
-block = []
-game_stage = Stage()
-game_stage.easy_stage()
-game_stage.setting_stage(player, cac, block)
 
-cg = Group()
-scene = Clear_Scene()
+player = None
+cac = None
+block = None
+game_stage = None
+cg = None
+scene = None
 
 
-def make_group():
-    for j in range(game_stage.cac_count):
-        if cac[j].isColl and j not in cg.array:
-            cg.array.append(j)
-            cg.array.sort()
-        if j not in cg.not_group:
-            cg.not_group.append(j)
+def enter():
+    global player, cac, block, game_stage,cg, scene
+    player = Stone()
+    cac = []
+    block = []
+    game_stage = Stage()
+    game_stage.easy_stage()
+    game_stage.setting_stage(player, cac, block)
+    cg = Group()
+    scene = Clear_Scene()
 
-    for i in range(len(cg.array)):
-        cg.not_group.remove(cg.array[i])
 
-
-def render():
-    global clear
-    game_stage.draw_stage()
-    player.render()
-    for i in range(game_stage.cac_count):
-        cac[i].render()
-    if clear:
-        scene.Win()
+def exit():
+    global player, cac, block, game_stage, cg, scene
+    del player
+    del cac
+    del block
+    del game_stage
+    del cg
+    del scene
 
 
 def update():
@@ -556,11 +578,22 @@ def update():
     game_stage.stage_clear(cac)
     handle_events()
     update_canvas()
+    delay(0.02)
 
 
-while running:
+def draw():
+    global clear
+    game_stage.draw_stage()
+    player.render()
+    for i in range(game_stage.cac_count):
+        cac[i].render()
+    if clear:
+        scene.Win()
 
-    clear_canvas()
-    render()
-    update()
-    delay(0.05)
+
+# while running:
+#
+#     clear_canvas()
+#     render()
+#     update()
+#     delay(0.05)
