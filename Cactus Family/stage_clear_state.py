@@ -3,20 +3,26 @@ import game_framework
 import Cactus_Family
 
 image = None
-
+clear_time = 0.0
 
 def enter():
     global image
-    image = load_image('pause.png')
+    image = load_image('Clear.png')
 
 
 def exit():
-    global image
-    del image
+    # global image
+    # del image
+    pass
 
 
 def update():
-    pass
+    global clear_time
+    if(clear_time > 1.0):
+        clear_time = 0
+        resume()
+    delay(0.01)
+    clear_time += 0.01
 
 
 def draw():
@@ -31,11 +37,11 @@ def pause():
 
 
 def resume():
+    Cactus_Family.next_level()
     game_framework.pop_state()
 
 
 def handle_events():
     events = get_events()
     for event in events:
-        if event.type == SDL_KEYDOWN and event.key == SDLK_p:
-            resume()
+        pass

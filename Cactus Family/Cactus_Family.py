@@ -1,48 +1,15 @@
 # coding=utf-8
 from pico2d import *
 import random
-import threading
-
 import game_framework
-#import title_state
 import pause_state
+import stage_clear_state
 
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
 debug_mode = False
-
 clear = False
 now_stage = 1
-
-
-class Clear_Scene:
-    def __init__(self):
-        self.scene = load_image('Clear.png')
-        self.count = 0
-        self.timer = 0
-
-    def Win(self):
-        global clear
-        if self.count == 0:
-            self.timer = threading.Timer(1, self.Win)
-            self.timer.start()
-        self.count += 1
-
-        if self.count == 15:
-            self.timer.cancel()
-            self.count = 0
-            print(self.count)
-            clear = False
-            global now_stage
-            now_stage += 1
-            change_stage(now_stage)
-            player.isMovable = True
-        else:
-            self.draw_scene()
-            player.isMovable = False
-
-    def draw_scene(self):
-        self.scene.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
 
 
 class Stage:
@@ -450,6 +417,13 @@ def exit():
     running = False
 
 
+def next_level():
+    global now_stage, clear
+    now_stage += 1
+    change_stage(now_stage)
+    clear = False
+
+
 def change_stage(level):
     if level == 1:
         game_stage.easy_stage()
@@ -507,7 +481,7 @@ def handle_events():
                 print(player.x, player.y)
                 cg.print_g()
             elif event.key == SDLK_p:
-                game_framework.push(pause_state)
+                game_framework.push_state(pause_state)
             else:
                 player.handle_Stone(event)
         elif event.type == SDL_KEYUP:
@@ -522,11 +496,10 @@ cac = None
 block = None
 game_stage = None
 cg = None
-scene = None
 
 
 def enter():
-    global player, cac, block, game_stage,cg, scene
+    global player, cac, block, game_stage,cg
     player = Stone()
     cac = []
     block = []
@@ -534,20 +507,28 @@ def enter():
     game_stage.easy_stage()
     game_stage.setting_stage(player, cac, block)
     cg = Group()
-    scene = Clear_Scene()
 
 
 def exit():
-    global player, cac, block, game_stage, cg, scene
+    global player, cac, block, game_stage, cg
     del player
     del cac
     del block
     del game_stage
     del cg
-    del scene
+
+
+def pause():
+    pass
+
+
+def resume():
+    pass
 
 
 def update():
+    if clear:
+        game_framework.push_state(stage_clear_state)
     player.update()
     # 전체 선인장
     for i in range(game_stage.cac_count):
@@ -559,7 +540,6 @@ def update():
     # 그룹된 선인장
     for i in cg.array:
         cac[i].collision()
-
         # cac[i].set_image('Cactus group.png')
         for j in range(game_stage.block_count):
             block[j].cg2blockPlayer(cac[i])
@@ -587,13 +567,3 @@ def draw():
     player.render()
     for i in range(game_stage.cac_count):
         cac[i].render()
-    if clear:
-        scene.Win()
-
-
-# while running:
-#
-#     clear_canvas()
-#     render()
-#     update()
-#     delay(0.05)
