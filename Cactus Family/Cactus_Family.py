@@ -11,6 +11,12 @@ debug_mode = False
 clear = False
 now_stage = 1
 
+player = None
+cac = None
+block = None
+game_stage = None
+cactus_group = None
+
 
 class Stage:
     def __init__(self):
@@ -57,14 +63,13 @@ class Stage:
 
     def hard_stage(self):
         self.map_image = 'Map_hard.png'
-        self.cac_count = 4
-        self.block_count = 21
-        self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
-        self.clear_pos = [(4, 4), (3, 4), (3, 5), (2, 4)]
+        self.cac_count = 6
+        self.block_count = 22
+        self.cac_pos = [(6, 4), (5, 8), (4, 2), (4, 4), (1, 3), (1, 5)]
+        self.clear_pos = [(5, 4), (5, 5), (4, 3), (4, 4), (3, 4), (2, 4)]
         self.stone_pos = [4, 5]
-        self.block_pos = [(8, 4), (4, 0), (3, 0), (0, 3), (0, 4), (0, 5), (0, 6),
-                          (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
-                          (4, 8), (1, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
+        self.block_pos = [(7, 2), (7, 3), (7, 4), (6, 5), (7, 6), (7, 7), (6, 8), (5, 9), (4, 9), (3, 9), (2, 8),
+                          (1, 7), (1, 6), (0, 5), (1, 4), (0, 3), (1, 2), (2, 1), (3, 1), (4, 0), (5, 0), (6, 1)]
 
     def setting_stage(self, stone, cac_o, block_o):
         self.map = load_image(self.map_image)
@@ -77,6 +82,8 @@ class Stage:
             block_o.append(Block())
             block_o[i].__init__()
             block_o[i].set_pos(self.block_pos[i])
+        # 선인장 그룹 초기화해주고 다시만들어줌
+        setting_group()
 
     def stage_clear(self, cac_o):
         cac_array = []
@@ -84,6 +91,7 @@ class Stage:
             cac_array.append((cac_o[i].get_pos()))
         self.clear_pos.sort()
         cac_array.sort()
+
         if self.clear_pos == cac_array:
             global clear
             clear = True
@@ -92,17 +100,84 @@ class Stage:
         self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
 
 
+def setting_group():
+    cactus_group.all_cactus.clear()
+    cactus_group.collision_cactus_group.clear()
+    cactus_group.single_cactus.clear()
+    cactus_group.merge_cactus_groups.clear()
+    for i in range(game_stage.cac_count):
+        cactus_group.all_cactus.append(i)
+        cactus_group.single_cactus.append(i)
+
+
 class Group:
     def __init__(self):
-        self.array = []
-        self.not_group = []
+        self.all_cactus = []
+        # 합쳐진 선인장들의 그룹들
+        self.merge_cactus_groups = []
+        # 충돌한 선인장들의 그룹
+        self.collision_cactus_group = []
+        # 합쳐지지않은 개별 선인장들
+        self.single_cactus = []
 
-    def partition(self):
-        pass
+    # def make_group(self):
+    #     for j in range(game_stage.cac_count):
+    #         if cac[j].isColl and j not in self.collision_cactus_group:
+    #             self.collision_cactus_group.append(j)
+    #             self.collision_cactus_group.sort()
+    #         if j not in self.single_cactus:
+    #             self.single_cactus.append(j)
+    #
+    #     for i in range(len(self.collision_cactus_group)):
+    #         self.single_cactus.remove(self.collision_cactus_group[i])
+
+    # 싱글선인장에서 선인장끼리 붙이치면 새로운 그룹만듬 그리고 합쳐진 그룹들에 넣음
+    # 충돌됬을때 한번만 실행해야함
+    def make_cactus_group(self):
+        # 모든 싱글 선인장에서 충돌이면 선인장그룹에 넣음
+        for i in self.single_cactus:
+            if cac[i].isColl:
+                self.collision_cactus_group.append(i)
+                self.single_cactus.remove(i)
+        if len(self.collision_cactus_group) > 1:
+            self.merge_cactus_groups.append(self.collision_cactus_group)
+            self.collision_cactus_group = []
+            print('안녕 나는 사람이야')
+
+    def check_collision_groups(self, num):
+        for i in range(len(self.merge_cactus_groups)):
+            if not i == num:
+                for k in self.merge_cactus_groups[num]:
+                    my_group = self.merge_cactus_groups[num][k]
+                    for j in self.merge_cactus_groups[i]:
+                        # 내 그룹 선인장과 다른 선인장들 비교해서 i값도 같이 리턴
+                        return cac[my_group].collision_to_cactus2(cac[self.merge_cactus_groups[i][j]]), i
+
+    # 합쳐진 선인장그룹들 끼리 비교해서 병합함
+    def group_checking(self):
+        for i in range(len(self.merge_cactus_groups)):  # 전체 합쳐진 선인장 그룹 중에서
+            # i번째 합쳐진 선인장 그룹이 다른 그룹과 충돌 되있다면
+            if self.check_collision_groups(i)[0]:
+                print('그룹끼리의 은밀한 만남이 시작된다')
+                return_coll = self.check_collision_groups(i)[1]
+                # 충돌된 그룹에 있는 요소들을 내꺼에 추가
+                self.merge_cactus_groups[i].extend(self.merge_cactus_groups[return_coll])
+                # 다 추가한뒤 해당 합쳐진 선인장그룹 제거
+                del self.merge_cactus_groups[return_coll]
 
     def print_g(self):
-        print('우린그룹', self.array)
-        print('그룹에 안속함', self.not_group)
+        # print('모든 선인장', self.all_cactus)
+        print('전체 그룹', self.merge_cactus_groups)
+        # print('우린그룹', self.collision_cactus_group)
+        print('그룹에 안속함', self.single_cactus)
+
+    def update(self):
+        for i in self.all_cactus:
+            if cac[i].isColl:
+                self.make_cactus_group()
+                self.all_cactus.remove(i)
+                if len(self.merge_cactus_groups) > 1:
+                    self.group_checking()
 
 
 class Block:
@@ -115,7 +190,7 @@ class Block:
         self.x = pos[1] * 100
         self.y = pos[0] * 100
 
-    def col2block(self, ano):
+    def collision_to_block(self, ano):
         if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
             ano.xdir = ano.ST_X_NONE
             ano.x -= ano.speed
@@ -129,76 +204,56 @@ class Block:
             ano.ydir = ano.ST_Y_NONE
             ano.y -= ano.speed
 
-    def col2blockPlayer(self, ano):
+    # 싱글 선인장
+    def collision_single_cactus_to_block(self, ano, stone):
         if not ano.isColl:
             if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
-                player.xdir = player.ST_X_NONE
-                player.x -= player.speed + 20
+                stone.xdir = stone.ST_X_NONE
+                stone.x -= stone.speed
                 ano.xdir = ano.ST_X_NONE
                 ano.x -= ano.speed
             elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
-                player.xdir = player.ST_X_NONE
-                player.x += player.speed + 20
+                stone.xdir = stone.ST_X_NONE
+                stone.x += stone.speed
                 ano.xdir = ano.ST_X_NONE
                 ano.x += ano.speed
 
             elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
-                player.ydir = player.ST_Y_NONE
-                player.y += player.speed + 20
+                stone.ydir = stone.ST_Y_NONE
+                stone.y += stone.speed
                 ano.ydir = ano.ST_Y_NONE
                 ano.y += ano.speed
 
             elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
-                player.ydir = player.ST_Y_NONE
-                player.y -= player.speed + 20
+                stone.ydir = stone.ST_Y_NONE
+                stone.y -= stone.speed
                 ano.ydir = ano.ST_Y_NONE
                 ano.y -= ano.speed
 
-    def col_cnt(self):
-        bye = 0
-        for i in cg.array:
-            # 각각 그룹선인장들이 벽과의 충돌 수의 합이 1이면
-            bye += cac[i].get_c2b()
-        self.hi = bye
-
-    def cg2blockPlayer(self, ano):
-        # TODO 벽이랑 선인장이랑 충돌 개수에따라 ㅇㅇ 제발
+    # 그룹 선인장
+    def collision_cactus_group_to_block(self, ano, stone):
         if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
-            player.xdir = player.ST_X_NONE
-            player.x -= (player.speed + 20)
-            for i in cg.array:
+            stone.xdir = stone.ST_X_NONE
+            stone.x -= stone.speed
+            for i in cactus_group.collision_cactus_group:
                 cac[i].xdir = cac[i].ST_X_NONE
                 cac[i].x -= cac[i].speed
-        
-            # 닫아있는 면적이 하나일때
-            # if self.hi == 1:
-            #     player.x -= (player.speed + 20)
-            #     for i in cg.array:
-            #         cac[i].xdir = cac[i].ST_X_NONE
-            #         cac[i].x -= cac[i].speed
-            #
-            # else:
-            #     player.x -= (player.speed)
-            #     for i in cg.array:
-            #         cac[i].xdir = cac[i].ST_X_NONE
-            #     ano.x -= ano.speed
-
         elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
-            player.xdir = player.ST_X_NONE
-            player.x += (player.speed + 20)
-            for i in cg.array:
+            stone.xdir = stone.ST_X_NONE
+            stone.x += stone.speed
+            for i in cactus_group.collision_cactus_group:
                 cac[i].xdir = cac[i].ST_X_NONE
                 cac[i].x += cac[i].speed
         elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
-            player.ydir = player.ST_Y_NONE
-            player.y += (player.speed + 20)
-            for i in cg.array:
+            stone.ydir = stone.ST_Y_NONE
+            stone.y += stone.speed
+            for i in cactus_group.collision_cactus_group:
                 cac[i].ydir = cac[i].ST_Y_NONE
                 cac[i].y += cac[i].speed
         elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
-            player.ydir = player.ST_Y_NONE
-            player.y -= (player.speed + 20)
-            for i in cg.array:
+            stone.ydir = stone.ST_Y_NONE
+            stone.y -= stone.speed
+            for i in cactus_group.collision_cactus_group:
                 cac[i].ydir = cac[i].ST_Y_NONE
                 cac[i].y -= cac[i].speed
 
@@ -264,7 +319,6 @@ class Stone(Player):
                 if self.y <= self.old_y:
                     self.ydir = self.ST_Y_NONE
 
-
     def handle_Stone(self, event):
         if event.type == SDL_KEYDOWN and self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
             if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
@@ -281,18 +335,6 @@ class Stone(Player):
                 elif event.key == SDLK_s and 50 < self.rect[3]:
                     self.ydir = self.ST_Y_DOWN
                     self.old_y = self.y - 100
-        elif event.type == SDL_KEYUP:
-            # 임시 테스트 쭉이동 ㅇㅇ
-            # if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
-            #     if event.key == SDLK_d:
-            #         self.old_x = self.x - (self.x % 100) + 100
-            #     elif event.key == SDLK_a:
-            #         self.old_x = self.x - (self.x % 100)
-            #     elif event.key == SDLK_w:
-            #         self.old_y = self.y - (self.y % 100) + 100
-            #     elif event.key == SDLK_s:
-            #         self.old_y = self.y - (self.y % 100)
-            pass
 
     def update(self):
         self.move()
@@ -300,9 +342,10 @@ class Stone(Player):
 
     def render(self):
         self.anime_cnt += 1
-        if self.anime_cnt == 10:
-            self.draw_image(4, 100, 100, 0)
-            self.anime_cnt = 0
+        if 46 > self.anime_cnt > 30:
+            self.draw_image(15, 100, 100, 0)
+            if self.anime_cnt == 45:
+                self.anime_cnt = 0
         else:
             self.draw_image(15, 100, 100, 1)
         if debug_mode:
@@ -325,78 +368,79 @@ class Cactus(Stone):
         self.x = random.randint(1, 8) * 100
         self.y = random.randint(1, 7) * 100
 
-    def check_col(self, ano):
-        print('?')
+    def collision_to_cactus(self, ano):
+        # 왼쪽 닫았다 나랑 닫은놈 충돌 True
+        if self.rect[0] == ano.rect[2] and self.y == ano.y:
+            self.isColl = True
+            ano.isColl = True
+        # 위쪽 닫았다
+        elif self.rect[1] == ano.rect[3] and self.x == ano.x:
+            self.isColl = True
+            ano.isColl = True
+
+    def collision_to_cactus2(self, ano):
+        # 왼쪽 닫았다 나랑 닫은놈 충돌 True
         if self.rect[0] == ano.rect[2] and self.y == ano.y:
             return True
-        elif self.rect[2] == ano.rect[0] and self.y == ano.y:
-            return True
+        # 위쪽 닫았다
         elif self.rect[1] == ano.rect[3] and self.x == ano.x:
-            return True
-        elif self.rect[3] == ano.rect[1] and self.x == ano.x:
             return True
         else:
             return False
 
-    def get_c2b(self):
-        c2b_cnt = 0
-        for i in range(game_stage.block_count):
-            if self.check_col(block[i]):
-                c2b_cnt += 1
-                print(c2b_cnt, '제발 잘되니')
-        return c2b_cnt
-
-    def New_coll(self, ano):
-        if 1:
-            # 왼쪽 닫았다
-            if self.rect[0] == ano.rect[2] and self.y == ano.y:
-                self.isColl = True
-                ano.isColl = True
-            # 위쪽 닫았다
-            elif self.rect[1] == ano.rect[3] and self.x == ano.x:
-                self.isColl = True
-                ano.isColl = True
-
-    def collision(self):
-        if self.rect[3] == player.rect[3] and player.rect[1] == self.rect[1] and player.xdir != player.ST_X_NONE:
+    def collision(self, self_num):
+        if self.rect[3] == player.rect[3] and player.rect[1] == self.rect[1] \
+                and player.xdir != player.ST_X_NONE and self.xdir == self.ST_X_NONE:
             # 오른쪽 충돌
             if self.rect[2] >= player.rect[0] and self.rect[0] < player.rect[2] and player.xdir == player.ST_X_BAKWARD:
                 if self.isColl:
-                    for i in cg.array:
-                        cac[i].xdir = cac[i].ST_X_BAKWARD
-                        cac[i].old_x = cac[i].x - 25
+                    print('안녕 나는 충돌이야')
+                    for i in range(len(cactus_group.merge_cactus_groups)):
+                        for j in cactus_group.merge_cactus_groups[i]:
+                            if self_num in cactus_group.merge_cactus_groups[i]:
+                                cac[j].xdir = cac[j].ST_X_BAKWARD
+                                cac[j].old_x = cac[j].x - 100
                 else:
                     self.xdir = self.ST_X_BAKWARD
-                    self.old_x = self.x - 25
+                    self.old_x = self.x - 100
+
             # 왼쪽 충돌
-            elif self.rect[0] <= player.rect[2] and \
-                    self.rect[2] > player.rect[0] and player.xdir == player.ST_X_FORWARD:
+            elif self.rect[0] <= player.rect[2] and self.rect[2] > player.rect[0] \
+                    and player.xdir == player.ST_X_FORWARD and self.xdir == self.ST_X_NONE:
                 if self.isColl:
-                    for i in cg.array:
-                        cac[i].xdir = cac[i].ST_X_FORWARD
-                        cac[i].old_x = cac[i].x + 25
+                    for i in range(len(cactus_group.merge_cactus_groups)):
+                        for j in cactus_group.merge_cactus_groups[i]:
+                            if self_num in cactus_group.merge_cactus_groups[i]:
+                                cac[j].xdir = cac[j].ST_X_FORWARD
+                                cac[j].old_x = cac[j].x + 100
                 else:
                     self.xdir = self.ST_X_FORWARD
-                    self.old_x = self.x + 25
-        elif self.rect[0] == player.rect[0] and player.rect[2] == self.rect[2] and player.ydir != player.ST_Y_NONE:
+                    self.old_x = self.x + 100
+        elif self.rect[0] == player.rect[0] and player.rect[2] == self.rect[2] \
+                and player.ydir != player.ST_Y_NONE and self.ydir == self.ST_Y_NONE:
             # 위 충돌
             if self.rect[1] >= player.rect[3] and self.rect[3] < player.rect[1] and player.ydir == player.ST_Y_DOWN:
                 if self.isColl:
-                    for i in cg.array:
-                        cac[i].ydir = cac[i].ST_Y_DOWN
-                        cac[i].old_y = cac[i].y - 25
+                    for i in range(len(cactus_group.merge_cactus_groups)):
+                        for j in cactus_group.merge_cactus_groups[i]:
+                            if self_num in cactus_group.merge_cactus_groups[i]:
+                                cac[j].ydir = cac[j].ST_Y_DOWN
+                                cac[j].old_y = cac[j].y - 100
                 else:
                     self.ydir = self.ST_Y_DOWN
-                    self.old_y = self.y - 25
+                    self.old_y = self.y - 100
             # 아래 충돌
-            elif self.rect[3] <= player.rect[1] and self.rect[1] > player.rect[3] and player.ydir == player.ST_Y_UP:
+            elif self.rect[3] <= player.rect[1] and self.rect[1] > player.rect[3] \
+                    and player.ydir == player.ST_Y_UP and self.ydir == self.ST_Y_NONE:
                 if self.isColl:
-                    for i in cg.array:
-                        cac[i].ydir = cac[i].ST_Y_UP
-                        cac[i].old_y = cac[i].y + 25
+                    for i in range(len(cactus_group.merge_cactus_groups)):
+                        for j in cactus_group.merge_cactus_groups[i]:
+                            if self_num in cactus_group.merge_cactus_groups[i]:
+                                cac[j].ydir = cac[j].ST_Y_UP
+                                cac[j].old_y = cac[j].y + 100
                 else:
                     self.ydir = self.ST_Y_UP
-                    self.old_y = self.y + 25
+                    self.old_y = self.y + 100
 
     def render(self):
         if self.isColl:
@@ -409,12 +453,6 @@ class Cactus(Stone):
     def update(self):
         self.move()
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
-
-
-def exit():
-    global running
-    close_canvas()
-    running = False
 
 
 def next_level():
@@ -436,20 +474,6 @@ def change_stage(level):
     else:
         game_stage.test_stage()
     game_stage.setting_stage(player, cac, block)
-    cg.array.clear()
-    cg.not_group.clear()
-
-
-def make_group():
-    for j in range(game_stage.cac_count):
-        if cac[j].isColl and j not in cg.array:
-            cg.array.append(j)
-            cg.array.sort()
-        if j not in cg.not_group:
-            cg.not_group.append(j)
-
-    for i in range(len(cg.array)):
-        cg.not_group.remove(cg.array[i])
 
 
 def handle_events():
@@ -478,8 +502,8 @@ def handle_events():
                     cac[i].random_pos()
             elif event.key == SDLK_i:
                 debug_mode = not debug_mode
-                print(player.x, player.y)
-                cg.print_g()
+                # print(player.x, player.y)
+                cactus_group.print_g()
             elif event.key == SDLK_p:
                 game_framework.push_state(pause_state)
             else:
@@ -488,34 +512,25 @@ def handle_events():
             player.handle_Stone(event)
 
 
-open_canvas(MAP_WIDTH, MAP_HEIGHT)
-running = True
-
-player = None
-cac = None
-block = None
-game_stage = None
-cg = None
-
-
 def enter():
-    global player, cac, block, game_stage,cg
+    global player, cac, block, game_stage, cactus_group
     player = Stone()
     cac = []
     block = []
+    cactus_group = Group()
     game_stage = Stage()
     game_stage.easy_stage()
     game_stage.setting_stage(player, cac, block)
-    cg = Group()
 
 
 def exit():
-    global player, cac, block, game_stage, cg
+    global player, cac, block, game_stage, cactus_group
     del player
     del cac
     del block
     del game_stage
-    del cg
+    del cactus_group
+    close_canvas()
 
 
 def pause():
@@ -532,33 +547,33 @@ def update():
     player.update()
     # 전체 선인장
     for i in range(game_stage.cac_count):
+        cac[i].collision(i)
         cac[i].update()
         for j in range(game_stage.cac_count):
             if not i == j:
-                cac[i].New_coll(cac[j])
+                cac[i].collision_to_cactus(cac[j])
             # TODO 충돌 손봐줘야해오오오옹로ㅓㅇ로ㅓ알노ㅓㅏ
     # 그룹된 선인장
-    for i in cg.array:
-        cac[i].collision()
+    for i in cactus_group.collision_cactus_group:
+        # cac[i].collision(i)
         # cac[i].set_image('Cactus group.png')
         for j in range(game_stage.block_count):
-            block[j].cg2blockPlayer(cac[i])
+            block[j].collision_cactus_group_to_block(cac[i], player)
 
     # 그룹안된 선인장
-    for i in cg.not_group:
-        cac[i].collision()
+    for i in cactus_group.single_cactus:
+        # cac[i].collision(i)
         for j in range(game_stage.block_count):
-            block[j].col2blockPlayer(cac[i])
+            block[j].collision_single_cactus_to_block(cac[i], player)
 
     for i in range(game_stage.block_count):
-        block[i].col2block(player)
+        block[i].collision_to_block(player)
         block[i].update()
 
-    make_group()
+    cactus_group.update()
     game_stage.stage_clear(cac)
     handle_events()
     update_canvas()
-    delay(0.02)
 
 
 def draw():
@@ -567,3 +582,4 @@ def draw():
     player.render()
     for i in range(game_stage.cac_count):
         cac[i].render()
+    delay(0.03)

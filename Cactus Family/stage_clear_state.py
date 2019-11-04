@@ -18,11 +18,11 @@ def exit():
 
 def update():
     global clear_time
-    if(clear_time > 1.0):
+    if clear_time > 1.0:
         clear_time = 0
         resume()
     delay(0.01)
-    clear_time += 0.01
+    clear_time += 0.05
 
 
 def draw():
