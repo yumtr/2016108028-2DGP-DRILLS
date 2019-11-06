@@ -17,6 +17,9 @@ block = None
 game_stage = None
 cactus_group = None
 
+LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
+ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
+
 
 class Stage:
     def __init__(self):
@@ -102,12 +105,17 @@ class Stage:
 
 def setting_group():
     cactus_group.all_cactus.clear()
-    cactus_group.collision_cactus_group.clear()
     cactus_group.single_cactus.clear()
     cactus_group.merge_cactus_groups.clear()
     for i in range(game_stage.cac_count):
         cactus_group.all_cactus.append(i)
         cactus_group.single_cactus.append(i)
+
+# TODO 트루만 반환하는게아니라 어느면이 만났는지 해줘야햏랴헐야헐애ㅑ헝랴ㅐ헐야ㅐ허랴ㅐㅎ
+def is_player_collision_to_cac_group(group):
+    for i in group:
+        if cac[i].collision_to_cactus2(player):
+            return True
 
 
 # 두 그룹 충돌 검사
@@ -120,40 +128,18 @@ def groups_collision_check(first_group, second_group):
 
 class Group:
     def __init__(self):
-        self.all_cactus = []
-        # 합쳐진 선인장들의 그룹들
-        self.merge_cactus_groups = []
-        # 충돌한 선인장들의 그룹
-        self.collision_cactus_group = []
-        # 합쳐지지않은 개별 선인장들
+        self.all_cactus = []  # 합쳐진 선인장들의 그룹들
+        self.merge_cactus_groups = []  # 충돌한 선인장들의 그룹
         self.single_cactus = []
 
-    # 싱글선인장에서 선인장끼리 붙이치면 새로운 그룹만듬 그리고 합쳐진 그룹들에 넣음
-    # 충돌됬을때 한번만 실행해야함
+    # 싱글선인장에서 선인장끼리 붙어지면 그룹에 한번 넣음
     def make_cactus_group(self, coll_cac):
         self.single_cactus.remove(coll_cac)
-        # 합쳐진 그룹이 없으면 넣고 있으면 충돌검사해서 합쳐진그룹에 추가.
-        # self.merge_cactus_groups.append([coll_cac])
-        if len(self.merge_cactus_groups) == 0:
-            self.merge_cactus_groups.append([coll_cac])
-            print('없으면 넣어줌')
-            return
-        # 있으면 기존에있던 합쳐진 그룹이랑 합칠지 확인하고
-        for i in range(len(self.merge_cactus_groups)):
-            for j in self.merge_cactus_groups[i]:
-                if cac[coll_cac].collision_to_cactus2(cac[j]):
-                    self.merge_cactus_groups[i].extend([coll_cac])
-                    self.merge_cactus_groups[i].sort()
-                    print('있던거랑 합쳤어')
-                    return
-        # 없으면 합쳐진그룹에 새로 추가함
         self.merge_cactus_groups.append([coll_cac])
-        print('그마저도 없어서 걍 새로넣었다')
 
-    # 합쳐진 선인장그룹들 끼리 비교해서 병합함
+        # 합쳐진 선인장그룹들 끼리 비교해서 병합함
+
     def group_checking(self):
-        # if len(self.merge_cactus_groups) < 2:
-        #     return  # 두개보다 작으면 검사할게 없다 고로 리턴
         for i in range(len(self.merge_cactus_groups)):
             for j in range(len(self.merge_cactus_groups)):
                 if not i == j:
@@ -166,7 +152,6 @@ class Group:
     def print_g(self):
         # print('모든 선인장', self.all_cactus)
         print('전체 그룹', self.merge_cactus_groups)
-        # print('우린그룹', self.collision_cactus_group)
         print('그룹에 안속함', self.single_cactus)
 
     def update(self):
@@ -190,70 +175,91 @@ class Block:
 
     def collision_to_block(self, ano):
         if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
-            ano.xdir = ano.ST_X_NONE
+            ano.xdir = ST_X_NONE
             ano.x -= ano.speed
         elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
-            ano.xdir = ano.ST_X_NONE
+            ano.xdir = ST_X_NONE
             ano.x += ano.speed
         elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
-            ano.ydir = ano.ST_Y_NONE
+            ano.ydir = ST_Y_NONE
             ano.y += ano.speed
         elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
-            ano.ydir = ano.ST_Y_NONE
+            ano.ydir = ST_Y_NONE
             ano.y -= ano.speed
 
+    def 그룹선인장(self, group):
+        if is_player_collision_to_cac_group(group):
+            for i in group:
+                if self.rect[0] == cac[i].rect[2] and self.y == cac[i].y:
+                    player.forward_access = False
+                    return False
+                elif self.rect[2] == cac[i].rect[0] and self.y == cac[i].y:
+                    player.bakward_access = False
+                    return False
+                if self.rect[1] == cac[i].rect[3] and self.x == cac[i].x:
+                    player.down_access = False
+                    return False
+                if self.rect[3] == cac[i].rect[1] and self.x == cac[i].x:
+                    player.up_access = False
+                    return False
+        else:
+            return True
+            # player.forward_access = True
+            # player.bakward_access = True
+        # player.forward_access = True
+
     # 싱글 선인장
-    def collision_single_cactus_to_block(self, ano, stone):
-        if not ano.isColl:
-            if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
-                stone.xdir = stone.ST_X_NONE
-                stone.x -= stone.speed
-                ano.xdir = ano.ST_X_NONE
-                ano.x -= ano.speed
-            elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
-                stone.xdir = stone.ST_X_NONE
-                stone.x += stone.speed
-                ano.xdir = ano.ST_X_NONE
-                ano.x += ano.speed
-
-            elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
-                stone.ydir = stone.ST_Y_NONE
-                stone.y += stone.speed
-                ano.ydir = ano.ST_Y_NONE
-                ano.y += ano.speed
-
-            elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
-                stone.ydir = stone.ST_Y_NONE
-                stone.y -= stone.speed
-                ano.ydir = ano.ST_Y_NONE
-                ano.y -= ano.speed
-
-    # 그룹 선인장
-    def collision_cactus_group_to_block(self, ano, group, stone):
+    def collision_single_cactus_to_block(self, ano):
         if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
-            stone.xdir = stone.ST_X_NONE
-            stone.x -= stone.speed
-            for j in cactus_group.merge_cactus_groups[group]:
-                cac[j].xdir = cac[j].ST_X_NONE
-                cac[j].x -= cac[j].speed
+            player.xdir = ST_X_NONE
+            player.x -= player.speed
+            ano.xdir = ST_X_NONE
+            ano.x -= ano.speed
         elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
-            stone.xdir = stone.ST_X_NONE
-            stone.x += stone.speed
-            for j in cactus_group.merge_cactus_groups[group]:
-                cac[j].xdir = cac[j].ST_X_NONE
-                cac[j].x += cac[j].speed
+            player.xdir = ST_X_NONE
+            player.x += player.speed
+            ano.xdir = ST_X_NONE
+            ano.x += ano.speed
+
         elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
-            stone.ydir = stone.ST_Y_NONE
-            stone.y += stone.speed
-            for j in cactus_group.merge_cactus_groups[group]:
-                cac[j].ydir = cac[j].ST_Y_NONE
-                cac[j].y += cac[j].speed
+            player.ydir = ST_Y_NONE
+            player.y += player.speed
+            ano.ydir = ST_Y_NONE
+            ano.y += ano.speed
+
         elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
-            stone.ydir = stone.ST_Y_NONE
-            stone.y -= stone.speed
-            for j in cactus_group.merge_cactus_groups[group]:
-                cac[j].ydir = cac[j].ST_Y_NONE
-                cac[j].y -= cac[j].speed
+            player.ydir = ST_Y_NONE
+            player.y -= player.speed
+            ano.ydir = ST_Y_NONE
+            ano.y -= ano.speed
+
+    # 그룹 선인장?x
+    def collision_cactus_group_to_block(self, ano):
+        for group in range(len(cactus_group.merge_cactus_groups)):
+            if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
+                player.xdir = ST_X_NONE
+                player.x -= player.speed
+                for j in cactus_group.merge_cactus_groups[group]:
+                    cac[j].xdir = ST_X_NONE
+                    cac[j].x -= cac[j].speed
+            elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
+                player.xdir = ST_X_NONE
+                player.x += player.speed
+                for j in cactus_group.merge_cactus_groups[group]:
+                    cac[j].xdir = ST_X_NONE
+                    cac[j].x += cac[j].speed
+            elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
+                player.ydir = ST_Y_NONE
+                player.y += player.speed
+                for j in cactus_group.merge_cactus_groups[group]:
+                    cac[j].ydir = ST_Y_NONE
+                    cac[j].y += cac[j].speed
+            elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
+                player.ydir = ST_Y_NONE
+                player.y -= player.speed
+                for j in cactus_group.merge_cactus_groups[group]:
+                    cac[j].ydir = ST_Y_NONE
+                    cac[j].y -= cac[j].speed
 
     def update(self):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
@@ -261,27 +267,20 @@ class Block:
             draw_rectangle(self.rect[0], self.rect[1], self.rect[2], self.rect[3])
 
 
-class Player:
+class Stone:
     def __init__(self):
-        pass
-
-    ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD = 0, 1, 2
-    ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = 3, 4, 5
-    HIGH_SPEED = 30
-    LOW_SPEED = 10
-
-
-class Stone(Player):
-    def __init__(self):
-        self.xdir, self.ydir = self.ST_X_NONE, self.ST_Y_NONE
+        self.xdir, self.ydir = ST_X_NONE, ST_Y_NONE
         self.frame = 0
         self.obj = load_image('stone_sprites.png')
         self.x, self.y = 400, 300
         self.old_x, self.old_y = 0, 0
         self.speed = 20
         self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
-        self.isMovable = True
         self.anime_cnt = 0
+        self.forward_access = True
+        self.bakward_access = True
+        self.up_access = True
+        self.down_access = True
 
     def set_image(self, filename):
         self.obj = load_image(filename)
@@ -298,39 +297,38 @@ class Stone(Player):
         self.frame = (self.frame + 1) % count
 
     def move(self):
-        if self.isMovable:
-            if self.xdir == self.ST_X_FORWARD:
-                self.x += self.speed
-                if self.x >= self.old_x:
-                    self.xdir = self.ST_X_NONE
-            elif self.xdir == self.ST_X_BAKWARD:
-                self.x -= self.speed
-                if self.x <= self.old_x:
-                    self.xdir = self.ST_X_NONE
-            if self.ydir == self.ST_Y_UP:
-                self.y += self.speed
-                if self.y >= self.old_y:
-                    self.ydir = self.ST_Y_NONE
-            elif self.ydir == self.ST_Y_DOWN:
-                self.y -= self.speed
-                if self.y <= self.old_y:
-                    self.ydir = self.ST_Y_NONE
+        if self.xdir == ST_X_FORWARD:
+            self.x += self.speed
+            if self.x >= self.old_x:
+                self.xdir = ST_X_NONE
+        elif self.xdir == ST_X_BAKWARD:
+            self.x -= self.speed
+            if self.x <= self.old_x:
+                self.xdir = ST_X_NONE
+        elif self.ydir == ST_Y_UP:
+            self.y += self.speed
+            if self.y >= self.old_y:
+                self.ydir = ST_Y_NONE
+        elif self.ydir == ST_Y_DOWN:
+            self.y -= self.speed
+            if self.y <= self.old_y:
+                self.ydir = ST_Y_NONE
 
     def handle_Stone(self, event):
-        if event.type == SDL_KEYDOWN and self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
-            if self.xdir == self.ST_X_NONE and self.ydir == self.ST_Y_NONE:
-                if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50:
-                    self.xdir = self.ST_X_FORWARD
+        if event.type == SDL_KEYDOWN and self.xdir == ST_X_NONE and self.ydir == ST_Y_NONE:
+            if self.xdir == ST_X_NONE and self.ydir == ST_Y_NONE:
+                if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50 and self.forward_access:
+                    self.xdir = ST_X_FORWARD
                     # 임시 테스트 쭉이동하도록 + 1000
                     self.old_x = self.x + 100
-                elif event.key == SDLK_a and 50 < self.rect[0]:
-                    self.xdir = self.ST_X_BAKWARD
+                elif event.key == SDLK_a and 50 < self.rect[0] and self.bakward_access:
+                    self.xdir = ST_X_BAKWARD
                     self.old_x = self.x - 100
-                elif event.key == SDLK_w and self.rect[1] < MAP_WIDTH - 150:
-                    self.ydir = self.ST_Y_UP
+                elif event.key == SDLK_w and self.rect[1] < MAP_WIDTH - 150 and self.up_access:
+                    self.ydir = ST_Y_UP
                     self.old_y = self.y + 100
-                elif event.key == SDLK_s and 50 < self.rect[3]:
-                    self.ydir = self.ST_Y_DOWN
+                elif event.key == SDLK_s and 50 < self.rect[3] and self.down_access:
+                    self.ydir = ST_Y_DOWN
                     self.old_y = self.y - 100
 
     def update(self):
@@ -351,7 +349,8 @@ class Stone(Player):
 
 class Cactus(Stone):
     def __init__(self):
-        self.xdir, self.ydir = self.ST_X_NONE, self.ST_Y_NONE
+        super().__init__()
+        self.xdir, self.ydir = ST_X_NONE, ST_Y_NONE
         self.obj = load_image('Cactus_sprite.png')
         self.x, self.y = 0, 0
         self.old_x, self.old_y = 0, 0
@@ -366,77 +365,88 @@ class Cactus(Stone):
         self.y = random.randint(1, 7) * 100
 
     def collision_to_cactus(self, ano):
-        # 왼쪽 닫았다 나랑 닫은놈 충돌 True
         if self.rect[0] == ano.rect[2] and self.y == ano.y:
             self.isColl = True
             ano.isColl = True
-        # 위쪽 닫았다
         elif self.rect[1] == ano.rect[3] and self.x == ano.x:
             self.isColl = True
             ano.isColl = True
 
     def collision_to_cactus2(self, ano):
-        if self.rect[0] == ano.rect[2] and self.y == ano.y:
-            return True
-        elif self.rect[1] == ano.rect[3] and self.x == ano.x:
+        if self.rect[0] == ano.rect[2] and self.y == ano.y or \
+                self.rect[2] == ano.rect[0] and self.y == ano.y or \
+                self.rect[1] == ano.rect[3] and self.x == ano.x or \
+                self.rect[3] == ano.rect[1] and self.x == ano.x:
             return True
         else:
             return False
 
+    def collision_to_cactus3(self, ano):
+        if self.y == ano.y:
+            if self.rect[0] == ano.rect[2]:
+                return LEFT_COLLISION
+            elif self.rect[2] == ano.rect[0]:
+                return RIGHT_COLLISION
+        elif self.x == ano.x:
+            if self.rect[1] == ano.rect[3]:
+                return TOP_COLLISION
+            elif self.rect[3] == ano.rect[1]:
+                return BOTTOM_COLLISION
+        else:
+            return False
+
+    def move_cactus(self, move_type):
+        if move_type == ST_X_FORWARD:
+            self.xdir = move_type
+            self.old_x = self.x + 100
+        elif move_type == ST_X_BAKWARD:
+            self.xdir = move_type
+            self.old_x = self.x - 100
+        elif move_type == ST_Y_UP:
+            self.ydir = move_type
+            self.old_y = self.y + 100
+        elif move_type == ST_Y_DOWN:
+            self.ydir = move_type
+            self.old_y = self.y - 100
+
+    def move_cactus_group(self, move_type, cac_num):
+        if self.isColl:
+            for i in range(len(cactus_group.merge_cactus_groups)):
+                if cac_num in cactus_group.merge_cactus_groups[i]:
+                    if move_type == ST_X_FORWARD:
+                        for j in cactus_group.merge_cactus_groups[i]:
+                            cac[j].xdir = ST_X_FORWARD
+                            cac[j].old_x = cac[j].x + 100
+                    elif move_type == ST_X_BAKWARD:
+                        for j in cactus_group.merge_cactus_groups[i]:
+                            cac[j].xdir = ST_X_BAKWARD
+                            cac[j].old_x = cac[j].x - 100
+                    elif move_type == ST_Y_UP:
+                        for j in cactus_group.merge_cactus_groups[i]:
+                            cac[j].ydir = ST_Y_UP
+                            cac[j].old_y = cac[j].y + 100
+                    elif move_type == ST_Y_DOWN:
+                        for j in cactus_group.merge_cactus_groups[i]:
+                            cac[j].ydir = ST_Y_DOWN
+                            cac[j].old_y = cac[j].y - 100
+        else:
+            self.move_cactus(move_type)
+
     def collision(self, cac_num):
         if self.rect[3] == player.rect[3] and player.rect[1] == self.rect[1] \
-                and player.xdir != player.ST_X_NONE and self.xdir == self.ST_X_NONE:
-            # 오른쪽 충돌
-            if self.rect[2] >= player.rect[0] and self.rect[0] < player.rect[2] and player.xdir == player.ST_X_BAKWARD:
-                if self.isColl:
-                    print('@@@@@@안녕 나는 충돌이야')
-                    for i in range(len(cactus_group.merge_cactus_groups)):
-                        for j in cactus_group.merge_cactus_groups[i]:
-                            if cac_num in cactus_group.merge_cactus_groups[i]:
-                                cac[j].xdir = cac[j].ST_X_BAKWARD
-                                cac[j].old_x = cac[j].x - 100
-                            # TODO 여기 뭔가 이상한데 거저 중에 충돌있으면 전체 돌려줘야하는데 뭐함 수정요망
-                else:
-                    self.xdir = self.ST_X_BAKWARD
-                    self.old_x = self.x - 100
-
-            # 왼쪽 충돌
-            elif self.rect[0] <= player.rect[2] and self.rect[2] > player.rect[0] \
-                    and player.xdir == player.ST_X_FORWARD and self.xdir == self.ST_X_NONE:
-                if self.isColl:
-                    for i in range(len(cactus_group.merge_cactus_groups)):
-                        for j in cactus_group.merge_cactus_groups[i]:
-                            if cac_num in cactus_group.merge_cactus_groups[i]:
-                                cac[j].xdir = cac[j].ST_X_FORWARD
-                                cac[j].old_x = cac[j].x + 100
-                else:
-                    self.xdir = self.ST_X_FORWARD
-                    self.old_x = self.x + 100
+                and player.xdir != ST_X_NONE and self.xdir == ST_X_NONE:
+            if self.rect[0] <= player.rect[2] and self.rect[2] > player.rect[0]:
+                if player.xdir == ST_X_BAKWARD:
+                    self.move_cactus_group(ST_X_BAKWARD, cac_num)
+                elif player.xdir == ST_X_FORWARD:
+                    self.move_cactus_group(ST_X_FORWARD, cac_num)
         elif self.rect[0] == player.rect[0] and player.rect[2] == self.rect[2] \
-                and player.ydir != player.ST_Y_NONE and self.ydir == self.ST_Y_NONE:
-            # 위 충돌
-            if self.rect[1] >= player.rect[3] and self.rect[3] < player.rect[1] and player.ydir == player.ST_Y_DOWN:
-                if self.isColl:
-                    for i in range(len(cactus_group.merge_cactus_groups)):
-                        for j in cactus_group.merge_cactus_groups[i]:
-                            if cac_num in cactus_group.merge_cactus_groups[i]:
-                                cac[j].ydir = cac[j].ST_Y_DOWN
-                                cac[j].old_y = cac[j].y - 100
-                else:
-                    self.ydir = self.ST_Y_DOWN
-                    self.old_y = self.y - 100
-            # 아래 충돌
-            elif self.rect[3] <= player.rect[1] and self.rect[1] > player.rect[3] \
-                    and player.ydir == player.ST_Y_UP and self.ydir == self.ST_Y_NONE:
-                if self.isColl:
-                    for i in range(len(cactus_group.merge_cactus_groups)):
-                        for j in cactus_group.merge_cactus_groups[i]:
-                            if cac_num in cactus_group.merge_cactus_groups[i]:
-                                cac[j].ydir = cac[j].ST_Y_UP
-                                cac[j].old_y = cac[j].y + 100
-                else:
-                    self.ydir = self.ST_Y_UP
-                    self.old_y = self.y + 100
+                and player.ydir != ST_Y_NONE and self.ydir == ST_Y_NONE:
+            if self.rect[3] <= player.rect[1] and self.rect[1] > player.rect[3]:
+                if player.ydir == ST_Y_DOWN:
+                    self.move_cactus_group(ST_Y_DOWN, cac_num)
+                elif player.ydir == ST_Y_UP:
+                    self.move_cactus_group(ST_Y_UP, cac_num)
 
     def render(self):
         if self.isColl:
@@ -549,23 +559,41 @@ def update():
             if not i == j:
                 cac[i].collision_to_cactus(cac[j])
 
+    # 벽하고 충돌체크
     for k in range(game_stage.block_count):
-        # 그룹된 선인장
-        for i in range(len(cactus_group.merge_cactus_groups)):
-            if not len(cactus_group.merge_cactus_groups[i]) == 1:
-                for j in cactus_group.merge_cactus_groups[i]:
-                    block[k].collision_cactus_group_to_block(cac[j], i, player)
-                    break
-        # 그룹안된 선인장
+        block[k].collision_to_block(player)
+        block[k].update()
+        # 싱글 선인장이랑
         for i in cactus_group.single_cactus:
-            block[k].collision_single_cactus_to_block(cac[i], player)
+            block[k].collision_single_cactus_to_block(cac[i])
+        # 합체 선인장이랑
+        hi = True
+        for i in range(len(cactus_group.merge_cactus_groups)):
+            if block[k].그룹선인장(cactus_group.merge_cactus_groups[i]):
+                hi = True
+            else:
+                hi = False
+                # TODO 살려줘 ㅅㅂ
+            # for j in cactus_group.merge_cactus_groups[i]:
+            #     block[k].collision_to_block(cac[j])
+        if hi:  # 아무 충돌도없다는 거니까 아무대나 움직일수있게
+            player.forward_access = True
+            player.bakward_access = True
+            player.up_access = True
+            player.down_access = True
+    # for k in range(game_stage.block_count):
+    #     # # 그룹된 선인장
+    #     # for i in range(len(cactus_group.merge_cactus_groups)):
+    #     #     if not len(cactus_group.merge_cactus_groups[i]) == 1:
+    #     #         for j in cactus_group.merge_cactus_groups[i]:
+    #     #             block[k].collision_cactus_group_to_block(cac[j], i)
+    #     #             break
+    #     # 그룹안된 선인장
+    #     for i in cactus_group.single_cactus:
+    #         block[k].collision_single_cactus_to_block(cac[i])
 
-    for i in range(game_stage.block_count):
-        block[i].collision_to_block(player)
-        block[i].update()
-
+    game_stage.stage_clear(cac)
     cactus_group.update()
-    # game_stage.stage_clear(cac)
     handle_events()
     update_canvas()
 
