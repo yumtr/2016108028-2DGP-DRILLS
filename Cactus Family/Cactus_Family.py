@@ -191,16 +191,20 @@ class Block:
         if is_player_collision_to_cac_group(group):
             for i in group:
                 if self.rect[0] == cac[i].rect[2] and self.y == cac[i].y:
-                    player.forward_access = False
+                    # player.forward_access = False
+                    player.move_judge(ST_X_FORWARD)
                     return False
                 elif self.rect[2] == cac[i].rect[0] and self.y == cac[i].y:
-                    player.bakward_access = False
+                    # player.bakward_access = False
+                    player.move_judge(ST_X_BAKWARD)
                     return False
                 if self.rect[1] == cac[i].rect[3] and self.x == cac[i].x:
-                    player.down_access = False
+                    # player.down_access = False
+                    player.move_judge(ST_Y_DOWN)
                     return False
                 if self.rect[3] == cac[i].rect[1] and self.x == cac[i].x:
-                    player.up_access = False
+                    # player.up_access = False
+                    player.move_judge(ST_Y_UP)
                     return False
         else:
             return True
@@ -281,6 +285,22 @@ class Stone:
         self.bakward_access = True
         self.up_access = True
         self.down_access = True
+    
+    def move_judge(self, move_type):
+        for i in range(game_stage.cac_count):
+            if move_type == ST_X_FORWARD and self.rect[2] == cac[i].rect[0] and self.y == cac[i].y:
+                self.forward_access = False
+                print(self.rect[2], '뭔데 ㅅㅂ', cac[i].rect[0], i)
+            elif move_type == ST_X_BAKWARD and self.rect[0] == cac[i].rect[2] and self.y == cac[i].y:
+                self.bakward_access = False
+            elif move_type == ST_Y_UP and self.rect[1] == cac[i].rect[3] and self.x == cac[i].x:
+                self.up_access = False
+            elif move_type == ST_Y_DOWN and self.rect[3] == cac[i].rect[1]and self.x == cac[i].x:
+                self.down_access = False
+            pass
+
+        # 내 move_type 방향에 벽이 있어야 move_type = False 설정
+        pass
 
     def set_image(self, filename):
         self.obj = load_image(filename)
