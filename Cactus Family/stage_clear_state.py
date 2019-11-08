@@ -1,6 +1,7 @@
 from pico2d import *
 import game_framework
 import Cactus_Family
+import class_Stage
 
 image = None
 clear_time = 0.0
@@ -37,7 +38,7 @@ def pause():
 
 
 def resume():
-    Cactus_Family.next_level()
+    class_Stage.next_level()
     game_framework.pop_state()
 
 

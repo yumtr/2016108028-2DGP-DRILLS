@@ -76,7 +76,6 @@ class Stone:
             if self.x_dir == ST_X_NONE and self.y_dir == ST_Y_NONE:
                 if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50 and self.forward_access:
                     self.x_dir = ST_X_FORWARD
-                    # 임시 테스트 쭉이동하도록 + 1000
                     self.old_x = self.x + 100
                 elif event.key == SDLK_a and 50 < self.rect[0] and self.bakward_access:
                     self.x_dir = ST_X_BAKWARD
