@@ -10,7 +10,7 @@ logo_time = 0.0
 
 def enter():
     global image
-    image = load_image('kpu_credit.png')
+    image = load_image('image_file\\kpu_credit.png')
 
 
 def exit():

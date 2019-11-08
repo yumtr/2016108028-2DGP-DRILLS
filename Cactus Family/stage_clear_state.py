@@ -7,7 +7,7 @@ clear_time = 0.0
 
 def enter():
     global image
-    image = load_image('Clear.png')
+    image = load_image('image_file\\Clear.png')
 
 
 def exit():
