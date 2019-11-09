@@ -11,6 +11,7 @@ LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 clear = False
 now_stage = 1
 
@@ -63,6 +64,8 @@ def handle_Stage(event):
             for i in range(Cactus_Family.game_stage.cac_count):
                 cac[i].random_pos()
 
+=======
+>>>>>>> parent of 19c180e... 스테이지 하나 더 추가
 =======
 >>>>>>> parent of 19c180e... 스테이지 하나 더 추가
 
@@ -133,11 +136,21 @@ class Stage:
         Cactus_Family.player.__init__(self.stone_pos)
         for i in range(self.cac_count):
 <<<<<<< HEAD
+<<<<<<< HEAD
             cac.append(Cactus())
             cac[i].__init__(self.cac_pos[i])
         for i in range(self.block_count):
             block.append(Block())
             block[i].__init__(self.block_pos[i])
+=======
+            Cactus_Family.cac.append(class_Cactus.Cactus())
+            Cactus_Family.cac[i].__init__()
+            Cactus_Family.cac[i].set_position(self.cac_pos[i])
+        for i in range(self.block_count):
+            Cactus_Family.block.append(class_Block.Block())
+            Cactus_Family.block[i].__init__()
+            Cactus_Family.block[i].set_position(self.block_pos[i])
+>>>>>>> parent of 19c180e... 스테이지 하나 더 추가
 =======
             Cactus_Family.cac.append(class_Cactus.Cactus())
             Cactus_Family.cac[i].__init__()

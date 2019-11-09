@@ -17,7 +17,10 @@ now_stage = 1
 
 player = None
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of 19c180e... 스테이지 하나 더 추가
 cac = None
 block = None
 game_stage = None
@@ -98,13 +101,19 @@ def enter():
 
 def exit():
 <<<<<<< HEAD
+<<<<<<< HEAD
     global player, game_stage, cactus_group
     del player
 =======
+=======
+>>>>>>> parent of 19c180e... 스테이지 하나 더 추가
     global player, cac, block, game_stage, cactus_group
     del player
     del cac
     del block
+<<<<<<< HEAD
+>>>>>>> parent of 19c180e... 스테이지 하나 더 추가
+=======
 >>>>>>> parent of 19c180e... 스테이지 하나 더 추가
     del game_stage
     del cactus_group
