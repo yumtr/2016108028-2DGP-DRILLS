@@ -13,8 +13,8 @@ MAP_HEIGHT = 800
 debug_mode = False
 
 player = None
-game_stage = None
 cactus_group = None
+game_stage = None
 
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
@@ -53,7 +53,7 @@ def enter():
 
 def exit():
     global player, game_stage, cactus_group
-    del player 
+    del player
     del game_stage
     del cactus_group
 

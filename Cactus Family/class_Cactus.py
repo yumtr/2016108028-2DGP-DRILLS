@@ -10,11 +10,12 @@ ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
 
 class Cactus(Stone):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, pos=[400, 300]):
+        super().__init__(pos)
+        self.x = pos[1] * 100
+        self.y = pos[0] * 100
         self.x_dir, self.y_dir = ST_X_NONE, ST_Y_NONE
         self.obj = load_image('image_file\\Cactus_sprite.png')
-        self.x, self.y = 0, 0
         self.old_x, self.old_y = 0, 0
         self.frame = 0
         self.speed = 20

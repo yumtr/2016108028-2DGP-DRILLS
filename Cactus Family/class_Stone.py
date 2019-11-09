@@ -8,11 +8,13 @@ ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
 
 class Stone:
-    def __init__(self):
+    def __init__(self, pos = [400, 300]):
+        self.x = pos[1] * 100
+        self.y = pos[0] * 100
         self.x_dir, self.y_dir = ST_X_NONE, ST_Y_NONE
         self.frame = 0
         self.obj = load_image('image_file\\stone_sprites.png')
-        self.x, self.y = 400, 300
+        self.text = load_font('font\\CookieRun Bold.ttf')
         self.old_x, self.old_y = 0, 0
         self.speed = 20
         self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
@@ -21,6 +23,7 @@ class Stone:
         self.bakward_access = True
         self.up_access = True
         self.down_access = True
+        self.move_count = 0
 
     # 내 move_type 방향에 선인장이있어야 move_type = False 설정
     def move_judge(self, move_type):
@@ -77,21 +80,26 @@ class Stone:
                 if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50 and self.forward_access:
                     self.x_dir = ST_X_FORWARD
                     self.old_x = self.x + 100
+                    self.move_count += 1
                 elif event.key == SDLK_a and 50 < self.rect[0] and self.bakward_access:
                     self.x_dir = ST_X_BAKWARD
                     self.old_x = self.x - 100
+                    self.move_count += 1
                 elif event.key == SDLK_w and self.rect[1] < MAP_WIDTH - 150 and self.up_access:
                     self.y_dir = ST_Y_UP
                     self.old_y = self.y + 100
+                    self.move_count += 1
                 elif event.key == SDLK_s and 50 < self.rect[3] and self.down_access:
                     self.y_dir = ST_Y_DOWN
                     self.old_y = self.y - 100
+                    self.move_count += 1
 
     def update(self):
         self.move()
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
 
     def render(self):
+        self.text.draw(MAP_WIDTH/2 - 50, MAP_HEIGHT - 25, '움직인 횟수 ' + str(self.move_count), color=(255, 255, 255))
         self.anime_cnt += 1
         if 46 > self.anime_cnt > 30:
             self.draw_image(15, 100, 100, 0)

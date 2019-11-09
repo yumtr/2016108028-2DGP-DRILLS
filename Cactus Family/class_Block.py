@@ -12,8 +12,9 @@ def is_player_collision_to_cac_group(group):
 
 
 class Block:
-    def __init__(self):
-        self.x, self.y = 400, 300
+    def __init__(self, pos = [400, 300]):
+        self.x = pos[1] * 100
+        self.y = pos[0] * 100
         self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
         self.collision_judgment = True
 
@@ -42,26 +43,46 @@ class Block:
 
     # 싱글 선인장이랑 벽하고 충돌
     def collision_single_cactus_to_block(self, ano):
+        # if ano.collision_to_cactus(Cactus_Family.player):   # 돌하고 닿아있으면
+        #     if self.rect[0] == ano.rect[2] and self.y == ano.y:
+        #         # Cactus_Family.player.forward_access = False
+        #         Cactus_Family.player.move_judge(ST_X_FORWARD)
+        #         return False
+        #     elif self.rect[2] == ano.rect[0] and self.y == ano.y:
+        #         # Cactus_Family.player.bakward_access = False
+        #         Cactus_Family.player.move_judge(ST_X_BAKWARD)
+        #         return False
+        #     if self.rect[1] == ano.rect[3] and self.x == ano.x:
+        #         # Cactus_Family.player.down_access = False
+        #         Cactus_Family.player.move_judge(ST_Y_DOWN)
+        #         return False
+        #     if self.rect[3] == ano.rect[1] and self.x == ano.x:
+        #         # Cactus_Family.player.up_access = False
+        #         Cactus_Family.player.move_judge(ST_Y_UP)
+        #         return False
+        # else:   # 돌하고 안닿아있으면 참
+        #     return True
         if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
             Cactus_Family.player.x_dir = ST_X_NONE
-            Cactus_Family.player.x -= Cactus_Family.player.speed
+            Cactus_Family.player.x -= Cactus_Family.player.speed * 2
             ano.x_dir = ST_X_NONE
             ano.x -= ano.speed
+
         elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
             Cactus_Family.player.x_dir = ST_X_NONE
-            Cactus_Family.player.x += Cactus_Family.player.speed
+            Cactus_Family.player.x += Cactus_Family.player.speed * 2
             ano.x_dir = ST_X_NONE
             ano.x += ano.speed
 
         elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
             Cactus_Family.player.y_dir = ST_Y_NONE
-            Cactus_Family.player.y += Cactus_Family.player.speed
+            Cactus_Family.player.y += Cactus_Family.player.speed * 2
             ano.y_dir = ST_Y_NONE
             ano.y += ano.speed
 
         elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
             Cactus_Family.player.y_dir = ST_Y_NONE
-            Cactus_Family.player.y -= Cactus_Family.player.speed
+            Cactus_Family.player.y -= Cactus_Family.player.speed * 2
             ano.y_dir = ST_Y_NONE
             ano.y -= ano.speed
 

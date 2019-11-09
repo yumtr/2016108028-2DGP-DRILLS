@@ -33,7 +33,6 @@ def change_stage(level):
         Cactus_Family.game_stage.hard_stage()
     elif level == 4:
         Cactus_Family.game_stage.level_4()
-        print('dsd')
     elif level == 't':
         Cactus_Family.game_stage.test_stage()
     else:
@@ -141,15 +140,13 @@ class Stage:
 
     def setting_stage(self):
         self.map = load_image(self.map_image)
-        Cactus_Family.player.set_position(self.stone_pos)
+        Cactus_Family.player.__init__(self.stone_pos)
         for i in range(self.cac_count):
             cac.append(Cactus())
-            cac[i].__init__()
-            cac[i].set_position(self.cac_pos[i])
+            cac[i].__init__(self.cac_pos[i])
         for i in range(self.block_count):
             block.append(Block())
-            block[i].__init__()
-            block[i].set_position(self.block_pos[i])
+            block[i].__init__(self.block_pos[i])
         # 선인장 그룹 초기화해주고 다시만들어줌
         setting_group()
 
