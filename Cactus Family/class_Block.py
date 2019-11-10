@@ -91,20 +91,17 @@ class Block:
         if is_player_collision_to_cac_group(group):
             for i in group:
                 if self.rect[0] == Cactus_Family.cac[i].rect[2] and self.y == Cactus_Family.cac[i].y:
-                    # Cactus_Family.player.forward_access = False
                     Cactus_Family.player.move_judge(ST_X_FORWARD)
                     return False
                 elif self.rect[2] == Cactus_Family.cac[i].rect[0] and self.y == Cactus_Family.cac[i].y:
-                    # Cactus_Family.player.bakward_access = False
                     Cactus_Family.player.move_judge(ST_X_BAKWARD)
                     return False
-                if self.rect[1] == Cactus_Family.cac[i].rect[3] and self.x == Cactus_Family.cac[i].x:
-                    # Cactus_Family.player.down_access = False
+                elif self.rect[1] == Cactus_Family.cac[i].rect[3] and self.x == Cactus_Family.cac[i].x:
                     Cactus_Family.player.move_judge(ST_Y_DOWN)
                     return False
-                if self.rect[3] == Cactus_Family.cac[i].rect[1] and self.x == Cactus_Family.cac[i].x:
-                    # Cactus_Family.player.up_access = False
+                elif self.rect[3] == Cactus_Family.cac[i].rect[1] and self.x == Cactus_Family.cac[i].x:
                     Cactus_Family.player.move_judge(ST_Y_UP)
+                    print('dsds')
                     return False
         else:
             return True

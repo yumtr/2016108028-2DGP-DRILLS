@@ -4,6 +4,7 @@ from class_Cactus import Cactus
 import Cactus_Family
 import game_framework
 import stage_clear_state
+import ending_state
 
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
@@ -39,6 +40,8 @@ def change_stage(level):
         Cactus_Family.game_stage.test_stage()
     Cactus_Family.game_stage.setting_stage()
 
+# game_framework.push_state(ending_state)
+
 
 def handle_Stage(event):
     global now_stage, cac
@@ -70,6 +73,10 @@ def setting_group():
     for i in range(Cactus_Family.game_stage.cac_count):
         Cactus_Family.cactus_group.all_cactus.append(i)
         Cactus_Family.cactus_group.single_cactus.append(i)
+
+
+def eng_game():
+    game_framework.push_state(ending_state)
 
 
 class Stage:
@@ -129,7 +136,7 @@ class Stage:
 
     def level_4(self):
         self.map_image = 'image_file\\Map_4.png'
-        self.cac_pos = [(7, 7), (6, 4), (6, 5), (6, 6), (4, 2), (4, 3), (2, 6), (1, 6)]
+        self.cac_pos = [(7, 7), (6, 4), (5, 5), (6, 6), (4, 2), (3, 3), (2, 4), (1, 6)]
         self.clear_pos = [(5, 6), (4, 4), (4, 5), (4, 6), (3, 2), (3, 3), (3, 4), (2, 4)]
         self.stone_pos = [4, 5]
         self.block_pos = [(8, 2), (8, 7), (7, 1), (7, 3), (7, 4), (7, 5), (7, 6), (7, 8), (6, 1), (6, 9), (5, 0),

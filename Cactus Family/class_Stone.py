@@ -24,6 +24,11 @@ class Stone:
         self.up_access = True
         self.down_access = True
         self.move_count = 0
+        self.stage_move_count = []
+
+    def get_move_count(self):
+        self.stage_move_count.append(self.move_count)
+        # 손좀봐야함
 
     # 내 move_type 방향에 선인장이있어야 move_type = False 설정
     def move_judge(self, move_type):
