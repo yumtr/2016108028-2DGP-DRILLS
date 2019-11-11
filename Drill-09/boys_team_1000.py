@@ -48,13 +48,13 @@ running = True;
 while running:
     handle_events()
 
-    for boy in team:
-        boy.update()
+    for bird in team:
+        bird.update()
 
     clear_canvas()
     grass.draw()
-    for boy in team:
-        boy.draw()
+    for bird in team:
+        bird.draw()
     update_canvas()
 
     delay(0.05)

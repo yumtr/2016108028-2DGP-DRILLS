@@ -33,95 +33,95 @@ key_event_table = {
 class IdleState:
 
     @staticmethod
-    def enter(boy, event):
-        if event == RIGHT_DOWN:
-            boy.velocity += RUN_SPEED_PPS
-        elif event == LEFT_DOWN:
-            boy.velocity -= RUN_SPEED_PPS
-        elif event == RIGHT_UP:
-            boy.velocity -= RUN_SPEED_PPS
-        elif event == LEFT_UP:
-            boy.velocity += RUN_SPEED_PPS
-        boy.timer = 1000
+    def enter(bird, event):
+        bird.velocity = RUN_SPEED_PPS
+
 
     @staticmethod
-    def exit(boy, event):
+    def exit(bird, event):
         if event == SPACE:
-            boy.fire_ball()
+            bird.fire_ball()
         pass
 
     @staticmethod
-    def do(boy):
-        boy.calculate_frame()
+    def do(bird):
+        bird.calculate_frame()
+        bird.x += bird.velocity * game_framework.frame_time
+        bird.x = clamp(25, bird.x, 1600 - 25)
+
+        if bird.x > get_canvas_width() - 100:
+            bird.velocity = -RUN_SPEED_PPS
+        elif bird.x < 100:
+            bird.velocity = RUN_SPEED_PPS
+        bird.dir = clamp(-1, bird.velocity, 1)
 
     @staticmethod
-    def draw(boy):
-        if boy.dir == 1:
-            boy.image.clip_draw(int(boy.frame) * boy.width, boy.now_row * boy.height, boy.width, boy.height, boy.x,
-                                boy.y)
+    def draw(bird):
+        if bird.dir == 1:
+            bird.image.clip_draw(int(bird.frame) * bird.width, bird.now_row * bird.height, bird.width, bird.height, bird.x,
+                                bird.y)
         else:
-            boy.image.clip_composite_draw(int(boy.frame) * boy.width, boy.now_row * boy.height, boy.width, boy.height,
-                                          0, 'h', boy.x, boy.y, boy.width, boy.height)
+            bird.image.clip_composite_draw(int(bird.frame) * bird.width, bird.now_row * bird.height, bird.width, bird.height,
+                                          0, 'h', bird.x, bird.y, bird.width, bird.height)
 
 
 class RunState:
 
     @staticmethod
-    def enter(boy, event):
+    def enter(bird, event):
         if event == RIGHT_DOWN:
-            boy.velocity += RUN_SPEED_PPS
+            bird.velocity += RUN_SPEED_PPS
         elif event == LEFT_DOWN:
-            boy.velocity -= RUN_SPEED_PPS
+            bird.velocity -= RUN_SPEED_PPS
         elif event == RIGHT_UP:
-            boy.velocity -= RUN_SPEED_PPS
+            bird.velocity -= RUN_SPEED_PPS
         elif event == LEFT_UP:
-            boy.velocity += RUN_SPEED_PPS
-        boy.dir = clamp(-1, boy.velocity, 1)
+            bird.velocity += RUN_SPEED_PPS
+        bird.dir = clamp(-1, bird.velocity, 1)
 
     @staticmethod
-    def exit(boy, event):
+    def exit(bird, event):
         if event == SPACE:
-            boy.fire_ball()
+            bird.fire_ball()
 
     @staticmethod
-    def do(boy):
-        boy.calculate_frame()
-
-        boy.x += boy.velocity * game_framework.frame_time
-        boy.x = clamp(25, boy.x, 1600 - 25)
+    def do(bird):
+        bird.calculate_frame()
+        bird.x += bird.velocity * game_framework.frame_time
+        bird.x = clamp(25, bird.x, 1600 - 25)
 
     @staticmethod
-    def draw(boy):
-        if boy.dir == 1:
-            boy.image.clip_draw(int(boy.frame) * boy.width, boy.now_row * boy.height, boy.width, boy.height, boy.x,
-                                boy.y)
+    def draw(bird):
+        if bird.dir == 1:
+            bird.image.clip_draw(int(bird.frame) * bird.width, bird.now_row * bird.height, bird.width, bird.height, bird.x,
+                                bird.y)
         else:
-            boy.image.clip_composite_draw(int(boy.frame) * boy.width, boy.now_row * boy.height, boy.width, boy.height,
-                                          0, 'h', boy.x, boy.y, boy.width, boy.height)
+            bird.image.clip_composite_draw(int(bird.frame) * bird.width, bird.now_row * bird.height, bird.width, bird.height,
+                                          0, 'h', bird.x, bird.y, bird.width, bird.height)
 
 
 class SleepState:
 
     @staticmethod
-    def enter(boy, event):
-        boy.frame = 0
+    def enter(bird, event):
+        bird.frame = 0
 
     @staticmethod
-    def exit(boy, event):
+    def exit(bird, event):
         pass
 
     @staticmethod
-    def do(boy):
-        boy.calculate_frame()
+    def do(bird):
+        bird.calculate_frame()
 
     @staticmethod
-    def draw(boy):
-        if boy.dir == 1:
-            boy.image.clip_composite_draw(int(boy.frame) * 100, 300, 100, 100, 3.141592 / 2, '', boy.x - 25, boy.y - 25,
+    def draw(bird):
+        if bird.dir == 1:
+            bird.image.clip_composite_draw(int(bird.frame) * 100, 300, 100, 100, 3.141592 / 2, '', bird.x - 25, bird.y - 25,
                                           100, 100)
         else:
-            boy.image.clip_composite_draw(int(boy.frame) * 100, 200, 100, 100, -3.141592 / 2, '', boy.x + 25,
-                                          boy.y - 25, 100, 100)
+            bird.image.clip_composite_draw(int(bird.frame) * 100, 200, 100, 100, -3.141592 / 2, '', bird.x + 25,
+                                          bird.y - 25, 100, 100)
 
 
 next_state_table = {
@@ -132,8 +132,7 @@ next_state_table = {
 }
 
 
-class Boy:
-
+class Bird:
     def __init__(self):
         self.x, self.y = 1600 // 2, 150
         # Boy is only once created, so instance image loading is fine

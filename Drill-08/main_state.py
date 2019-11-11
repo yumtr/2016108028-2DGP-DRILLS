@@ -12,7 +12,7 @@ import pause_state
 
 name = "MainState"
 
-boy = None
+bird = None
 grass = None
 font = None
 
@@ -47,13 +47,13 @@ class Boy:
 
 
 def enter():
-    global boy, grass
+    global bird, grass
     boy = Boy()
     grass = Grass()
 
 
 def exit():
-    global boy, grass
+    global bird, grass
     del boy
     del grass
 
@@ -79,13 +79,13 @@ def handle_events():
 
 
 def update():
-    boy.update()
+    bird.update()
 
 
 def draw():
     clear_canvas()
     grass.draw()
-    boy.draw()
+    bird.draw()
     update_canvas()
 
 

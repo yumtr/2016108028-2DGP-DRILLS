@@ -12,7 +12,7 @@ from ball import Ball
 
 name = "MainState"
 
-boy = None
+bird = None
 grass = None
 balls = []
 big_balls = []
@@ -26,7 +26,7 @@ def collide(a, b):
 
 
 def enter():
-    global boy
+    global bird
     boy = Boy()
     game_world.add_object(boy, 1)
 
@@ -59,7 +59,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
                 game_framework.quit()
         else:
-            boy.handle_event(event)
+            bird.handle_event(event)
 
 
 def update():
