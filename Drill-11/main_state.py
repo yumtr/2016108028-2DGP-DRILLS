@@ -8,18 +8,36 @@ import game_world
 
 from boy import Boy
 from grass import Grass
-
+from ball import Ball
 
 name = "MainState"
 
 boy = None
+grass = None
+balls = []
+big_balls = []
+
+
+def collide(a, b):
+    # fill here
+    return True
+
+
+
 
 def enter():
     global boy
     boy = Boy()
+    game_world.add_object(boy, 1)
+
+    global grass
     grass = Grass()
     game_world.add_object(grass, 0)
-    game_world.add_object(boy, 1)
+
+    # fill here for balls
+
+
+
 
 
 def exit():
@@ -47,7 +65,9 @@ def handle_events():
 def update():
     for game_object in game_world.all_objects():
         game_object.update()
-    # fill here
+
+    # fill here for collision check
+
 
 
 def draw():
