@@ -11,9 +11,7 @@ class Ball:
             Ball.image = load_image('ball21x21.png')
         self.x, self.y, self.fall_speed = random.randint(0, 1600-1), 60, 0
 
-    def get_bb(self):
-        # fill here
-        return 0,0,0,0
+
 
     def draw(self):
         self.image.draw(self.x, self.y)
