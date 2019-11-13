@@ -30,20 +30,20 @@ class Stone:
         self.stage_move_count.append(self.move_count)
         # 손좀봐야함
 
-    # 내 move_type 방향에 선인장이있어야 move_type = False 설정
+    # 내 move_type 방향에 선인장이있어야 move_type = False 설정 && 싱글선인장이면 무효
     def move_judge(self, move_type):
         for i in range(Cactus_Family.game_stage.cac_count):
             if move_type == ST_X_FORWARD and self.rect[2] == Cactus_Family.cac[i].rect[0] \
-                    and self.y == Cactus_Family.cac[i].y:
+                    and self.y == Cactus_Family.cac[i].y and Cactus_Family.cac[i].is_collision:
                 self.forward_access = False
             elif move_type == ST_X_BAKWARD and self.rect[0] == Cactus_Family.cac[i].rect[2] \
-                    and self.y == Cactus_Family.cac[i].y:
+                    and self.y == Cactus_Family.cac[i].y and Cactus_Family.cac[i].is_collision:
                 self.bakward_access = False
             elif move_type == ST_Y_UP and self.rect[1] == Cactus_Family.cac[i].rect[3] \
-                    and self.x == Cactus_Family.cac[i].x:
+                    and self.x == Cactus_Family.cac[i].x and Cactus_Family.cac[i].is_collision:
                 self.up_access = False
             elif move_type == ST_Y_DOWN and self.rect[3] == Cactus_Family.cac[i].rect[1] \
-                    and self.x == Cactus_Family.cac[i].x:
+                    and self.x == Cactus_Family.cac[i].x and Cactus_Family.cac[i].is_collision:
                 self.down_access = False
             pass
 
