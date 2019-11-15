@@ -45,13 +45,13 @@ def handle_events():
     events = get_events()
     for event in events:
         if event.type == SDL_KEYDOWN:
-            if (event.key) == (SDLK_ESCAPE):
+            if event.key == SDLK_ESCAPE:
                 game_framework.quit()
-            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_UP):
+            elif event.key in (SDLK_UP, SDLK_w):
                 move_arrow(0)
-            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_DOWN):
+            elif event.key in (SDLK_DOWN, SDLK_s):
                 move_arrow(1)
-            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_RETURN):
+            elif event.key == SDLK_RETURN:
                 choose_menu()
         elif event.type == SDL_QUIT:
             game_framework.quit()

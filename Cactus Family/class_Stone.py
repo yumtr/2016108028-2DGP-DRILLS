@@ -82,19 +82,19 @@ class Stone:
     def handle_Stone(self, event):
         if event.type == SDL_KEYDOWN and self.x_dir == ST_X_NONE and self.y_dir == ST_Y_NONE:
             if self.x_dir == ST_X_NONE and self.y_dir == ST_Y_NONE:
-                if event.key == SDLK_d and self.rect[2] < MAP_WIDTH - 50 and self.forward_access:
+                if event.key in (SDLK_RIGHT, SDLK_d) and self.rect[2] < MAP_WIDTH - 50 and self.forward_access:
                     self.x_dir = ST_X_FORWARD
                     self.old_x = self.x + 100
                     self.move_count += 1
-                elif event.key == SDLK_a and 50 < self.rect[0] and self.bakward_access:
+                elif event.key in (SDLK_LEFT, SDLK_a) and 50 < self.rect[0] and self.bakward_access:
                     self.x_dir = ST_X_BAKWARD
                     self.old_x = self.x - 100
                     self.move_count += 1
-                elif event.key == SDLK_w and self.rect[1] < MAP_WIDTH - 150 and self.up_access:
+                elif event.key in (SDLK_UP, SDLK_w) and self.rect[1] < MAP_WIDTH - 150 and self.up_access:
                     self.y_dir = ST_Y_UP
                     self.old_y = self.y + 100
                     self.move_count += 1
-                elif event.key == SDLK_s and 50 < self.rect[3] and self.down_access:
+                elif event.key in (SDLK_DOWN, SDLK_s) and 50 < self.rect[3] and self.down_access:
                     self.y_dir = ST_Y_DOWN
                     self.old_y = self.y - 100
                     self.move_count += 1

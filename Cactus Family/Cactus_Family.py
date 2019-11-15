@@ -47,7 +47,7 @@ def enter():
     player = Stone()
     cactus_group = Group()
     game_stage = Stage()
-    game_stage.easy_stage()
+    game_stage.level_1()
     game_stage.setting_stage()
 
 
@@ -78,25 +78,25 @@ def update_block():
     # 벽 업데이트
     for i in range(game_stage.block_count):
         block[i].update()
-    cactus_group.update()
 
 
 def update():
     game_stage.check_stage_clear()
     player.update()
-    update_cactus()
+    cactus_group.update()
     update_block()
+    update_cactus()
     handle_events()
     update_canvas()
 
 
 def draw():
     game_stage.draw_stage()
-    player.render()
     # 벽 그리기
     for i in range(game_stage.block_count):
         block[i].render()
     # 선인장 그리기
     for i in range(game_stage.cac_count):
         cac[i].render()
+    player.render()
     delay(0.03)

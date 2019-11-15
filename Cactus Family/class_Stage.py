@@ -27,11 +27,11 @@ def next_level():
 
 def change_stage(level):
     if level == 1:
-        Cactus_Family.game_stage.easy_stage()
+        Cactus_Family.game_stage.level_1()
     elif level == 2:
-        Cactus_Family.game_stage.normal_stage()
+        Cactus_Family.game_stage.level_2()
     elif level == 3:
-        Cactus_Family.game_stage.hard_stage()
+        Cactus_Family.game_stage.level_3()
     elif level == 4:
         Cactus_Family.game_stage.level_4()
     elif level == 't':
@@ -83,6 +83,7 @@ class Stage:
     global cac
 
     def __init__(self):
+        self.text = load_font('font\\CookieRun Bold.ttf')
         self.cac_pos = []
         self.block_pos = []
         self.stone_pos = []
@@ -91,6 +92,7 @@ class Stage:
         self.block_count = 0
         self.map_image = 'hi'
         self.map = 0
+        self.score = 0
 
     def test_stage(self):
         self.map_image = 'image_file\\Map_test.png'
@@ -103,7 +105,7 @@ class Stage:
         self.cac_count = len(self.cac_pos)
         self.block_count = len(self.block_pos)
 
-    def easy_stage(self):
+    def level_1(self):
         self.map_image = 'image_file\\Map_easy.png'
         self.cac_pos = [(6, 3), (5, 6), (3, 6)]
         self.clear_pos = [(3, 3), (3, 4), (2, 4)]
@@ -113,7 +115,7 @@ class Stage:
         self.cac_count = len(self.cac_pos)
         self.block_count = len(self.block_pos)
 
-    def normal_stage(self):
+    def level_2(self):
         self.map_image = 'image_file\\Map_normal.png'
         self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
         self.clear_pos = [(4, 4), (3, 4), (3, 5), (2, 4)]
@@ -124,7 +126,7 @@ class Stage:
         self.cac_count = len(self.cac_pos)
         self.block_count = len(self.block_pos)
 
-    def hard_stage(self):
+    def level_3(self):
         self.map_image = 'image_file\\Map_hard.png'
         self.cac_pos = [(6, 4), (5, 8), (4, 2), (4, 4), (1, 3), (1, 5)]
         self.clear_pos = [(5, 4), (5, 5), (4, 3), (4, 4), (3, 4), (2, 4)]
@@ -168,4 +170,6 @@ class Stage:
             game_framework.push_state(stage_clear_state)
 
     def draw_stage(self):
+        global now_stage
         self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
+        self.text.draw(10, MAP_HEIGHT - 25, '스테이지 ' + str(now_stage), color=(255, 255, 255))
