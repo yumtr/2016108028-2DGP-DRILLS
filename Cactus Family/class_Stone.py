@@ -1,6 +1,7 @@
 from pico2d import *
 import Cactus_Family
 
+
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)

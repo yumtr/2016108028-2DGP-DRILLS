@@ -1,6 +1,7 @@
 import game_framework
 import title_state
 from pico2d import *
+import Cactus_Family
 
 name = "EndingState"
 image = None
@@ -23,6 +24,7 @@ def update():
 def draw():
     clear_canvas()
     image.draw(450, 400)
+    Cactus_Family.game_stage.print_score()
     update_canvas()
 
 

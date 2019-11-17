@@ -6,6 +6,7 @@ import game_framework
 import stage_clear_state
 import ending_state
 
+MAX_LEVEL = 5
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
@@ -20,6 +21,8 @@ block = []
 
 def next_level():
     global now_stage, clear
+    Cactus_Family.game_stage.set_stage_score()
+    print(Cactus_Family.game_stage.map_score[now_stage], now_stage)
     now_stage += 1
     change_stage(now_stage)
     clear = False
@@ -39,6 +42,7 @@ def change_stage(level):
     else:
         Cactus_Family.game_stage.test_stage()
     Cactus_Family.game_stage.setting_stage()
+
 
 # game_framework.push_state(ending_state)
 
@@ -75,12 +79,8 @@ def setting_group():
         Cactus_Family.cactus_group.single_cactus.append(i)
 
 
-def eng_game():
-    game_framework.push_state(ending_state)
-
-
 class Stage:
-    global cac
+    global cac, now_stage
 
     def __init__(self):
         self.text = load_font('font\\CookieRun Bold.ttf')
@@ -93,6 +93,15 @@ class Stage:
         self.map_image = 'hi'
         self.map = 0
         self.score = 0
+        self.map_score = [0, 0, 0, 0, 0, 0]
+
+    def print_score(self):
+        for i in range(MAX_LEVEL - 1):
+            self.text.draw(MAP_WIDTH / 2, MAP_HEIGHT / 3 - (50 * i), str(i + 1) + '스테이지 기록 ' + str(self.map_score[i + 1]), color=(255, 255, 255))
+
+    def set_stage_score(self):
+        if now_stage != MAX_LEVEL:
+            self.map_score[now_stage] = Cactus_Family.player.move_count
 
     def test_stage(self):
         self.map_image = 'image_file\\Map_test.png'
@@ -173,3 +182,5 @@ class Stage:
         global now_stage
         self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
         self.text.draw(10, MAP_HEIGHT - 25, '스테이지 ' + str(now_stage), color=(255, 255, 255))
+        self.text.draw(10, MAP_HEIGHT - 50, '성적 ' + str(self.map_score[now_stage]), color=(255, 255, 255))
+

@@ -51,7 +51,7 @@ def handle_events():
                 move_arrow(0)
             elif event.key in (SDLK_DOWN, SDLK_s):
                 move_arrow(1)
-            elif event.key == SDLK_RETURN:
+            elif event.key in (SDLK_RETURN, SDLK_SPACE):
                 choose_menu()
         elif event.type == SDL_QUIT:
             game_framework.quit()

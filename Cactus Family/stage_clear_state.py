@@ -2,9 +2,11 @@ from pico2d import *
 import game_framework
 import Cactus_Family
 import class_Stage
+import ending_state
 
 image = None
 clear_time = 0.0
+
 
 def enter():
     global image
@@ -39,7 +41,10 @@ def pause():
 
 def resume():
     class_Stage.next_level()
-    game_framework.pop_state()
+    if class_Stage.now_stage == class_Stage.MAX_LEVEL:
+        game_framework.change_state(ending_state)
+    else:
+        game_framework.pop_state()
 
 
 def handle_events():
