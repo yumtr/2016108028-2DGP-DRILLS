@@ -20,34 +20,37 @@ block = []
 
 
 def next_level():
+    game_stage = Cactus_Family.get_game_stage()
     global now_stage, clear
-    Cactus_Family.game_stage.set_stage_score()
-    print(Cactus_Family.game_stage.map_score[now_stage], now_stage)
+    game_stage.set_stage_score()
+    print(game_stage.map_score[now_stage], now_stage)
     now_stage += 1
     change_stage(now_stage)
     clear = False
 
 
 def change_stage(level):
+    game_stage = Cactus_Family.get_game_stage()
     if level == 1:
-        Cactus_Family.game_stage.level_1()
+        game_stage.level_1()
     elif level == 2:
-        Cactus_Family.game_stage.level_2()
+        game_stage.level_2()
     elif level == 3:
-        Cactus_Family.game_stage.level_3()
+        game_stage.level_3()
     elif level == 4:
-        Cactus_Family.game_stage.level_4()
+        game_stage.level_4()
     elif level == 't':
-        Cactus_Family.game_stage.test_stage()
+        game_stage.test_stage()
     else:
-        Cactus_Family.game_stage.test_stage()
-    Cactus_Family.game_stage.setting_stage()
+        game_stage.test_stage()
+    game_stage.setting_stage()
 
 
 # game_framework.push_state(ending_state)
 
 
 def handle_Stage(event):
+    game_stage = Cactus_Family.get_game_stage()
     global now_stage, cac
     if event.type == SDL_KEYDOWN:
         if event.key == SDLK_r:
@@ -66,17 +69,19 @@ def handle_Stage(event):
             change_stage(now_stage)
         elif event.key == SDLK_t:
             change_stage('t')
-            for i in range(Cactus_Family.game_stage.cac_count):
+            for i in range(game_stage.cac_count):
                 cac[i].random_pos()
 
 
 def setting_group():
-    Cactus_Family.cactus_group.all_cactus.clear()
-    Cactus_Family.cactus_group.single_cactus.clear()
-    Cactus_Family.cactus_group.merge_cactus_groups.clear()
-    for i in range(Cactus_Family.game_stage.cac_count):
-        Cactus_Family.cactus_group.all_cactus.append(i)
-        Cactus_Family.cactus_group.single_cactus.append(i)
+    game_stage = Cactus_Family.get_game_stage()
+    cactus_group = Cactus_Family.get_cactus_group()
+    cactus_group.all_cactus.clear()
+    cactus_group.single_cactus.clear()
+    cactus_group.merge_cactus_groups.clear()
+    for i in range(game_stage.cac_count):
+        cactus_group.all_cactus.append(i)
+        cactus_group.single_cactus.append(i)
 
 
 class Stage:
@@ -94,6 +99,7 @@ class Stage:
         self.map = 0
         self.score = 0
         self.map_score = [0, 0, 0, 0, 0, 0]
+        self.player = Cactus_Family.get_stone()
 
     def print_score(self):
         for i in range(MAX_LEVEL - 1):
@@ -101,7 +107,7 @@ class Stage:
 
     def set_stage_score(self):
         if now_stage != MAX_LEVEL:
-            self.map_score[now_stage] = Cactus_Family.player.move_count
+            self.map_score[now_stage] = self.player.move_count
 
     def test_stage(self):
         self.map_image = 'image_file\\Map_test.png'
@@ -158,7 +164,7 @@ class Stage:
 
     def setting_stage(self):
         self.map = load_image(self.map_image)
-        Cactus_Family.player.__init__(self.stone_pos)
+        self.player.__init__(self.stone_pos)
         for i in range(self.cac_count):
             cac.append(Cactus())
             cac[i].__init__(self.cac_pos[i])

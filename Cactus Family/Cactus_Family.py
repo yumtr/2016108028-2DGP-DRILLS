@@ -20,6 +20,18 @@ LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
 
+def get_stone():
+    return player
+
+
+def get_cactus_group():
+    return cactus_group
+
+
+def get_game_stage():
+    return game_stage
+
+
 def handle_events():
     global debug_mode
     events = get_events()
