@@ -107,17 +107,18 @@ class Boy:
         self.x, self.y = 1280 // 2, 1024 // 2
         # Boy is only once created, so instance image loading is fine
         self.image = load_image('animation_sheet.png')
-        self.font = load_font('ENCR10B.TTF', 16)
+        self.font = load_font('ENCR10B.TTF', 20)
         self.dir = 1
         self.x_velocity, self.y_velocity = 0, 0
         self.frame = 0
         self.event_que = []
         self.cur_state = WalkingState
         self.cur_state.enter(self, None)
+        self.hp = 0
 
     def get_bb(self):
         # fill here
-        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+        return self.x - 30, self.y - 40, self.x + 30, self.y + 50
 
 
     def add_event(self, event):
@@ -133,8 +134,8 @@ class Boy:
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.x - 60, self.y + 50, '(Time: %3.2f)' % get_time(), (255, 255, 0))
-        #fill here
+        # self.font.draw(self.x - 60, self.y + 50, '(Time: %3.2f)' % get_time(), (255, 255, 0))
+        self.font.draw(self.x - 40, self.y + 45, 'HP : ' + str(self.hp), (255, 255, 0))
         draw_rectangle(*self.get_bb())
         #debug_print('Velocity :' + str(self.velocity) + '  Dir:' + str(self.dir) + ' Frame Time:' + str(game_framework.frame_time))
 
