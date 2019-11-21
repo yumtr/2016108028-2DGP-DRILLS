@@ -60,7 +60,7 @@ def draw():
     clear_canvas()
     image.draw(450, 400)
     menu_image.draw(450, 250)
-    arrow.draw(240, arrow_position)
+    arrow.draw(235, arrow_position)
     update_canvas()
 
 

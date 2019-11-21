@@ -9,6 +9,7 @@ import ending_state
 MAX_LEVEL = 5
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
+NO_SCORE = 10000
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
@@ -23,7 +24,7 @@ def next_level():
     game_stage = Cactus_Family.get_game_stage()
     global now_stage, clear
     game_stage.set_stage_score()
-    print(game_stage.map_score[now_stage], now_stage)
+    print(game_stage.max_map_score[now_stage], now_stage)
     now_stage += 1
     change_stage(now_stage)
     clear = False
@@ -97,17 +98,19 @@ class Stage:
         self.block_count = 0
         self.map_image = 'hi'
         self.map = 0
-        self.score = 0
-        self.map_score = [0, 0, 0, 0, 0, 0]
+        self.star_rank = 0
+        self.star_standard = [0, 0, 0]
+        self.max_map_score = [NO_SCORE for i in range(6)]
         self.player = Cactus_Family.get_stone()
+        self.star_level = 0
 
     def print_score(self):
         for i in range(MAX_LEVEL - 1):
-            self.text.draw(MAP_WIDTH / 2, MAP_HEIGHT / 3 - (50 * i), str(i + 1) + '스테이지 기록 ' + str(self.map_score[i + 1]), color=(255, 255, 255))
+            self.text.draw(MAP_WIDTH / 2, MAP_HEIGHT / 3 - (50 * i), str(i + 1) + '스테이지 기록 ' + str(self.max_map_score[i + 1]), color=(255, 255, 255))
 
     def set_stage_score(self):
-        if now_stage != MAX_LEVEL:
-            self.map_score[now_stage] = self.player.move_count
+        if now_stage != MAX_LEVEL and self.max_map_score[now_stage] > self.player.move_count:
+            self.max_map_score[now_stage] = self.player.move_count
 
     def test_stage(self):
         self.map_image = 'image_file\\Map_test.png'
@@ -129,6 +132,7 @@ class Stage:
                           (1, 6), (0, 5), (0, 4), (1, 3), (2, 2), (3, 1), (4, 2), (5, 1), (6, 2)]
         self.cac_count = len(self.cac_pos)
         self.block_count = len(self.block_pos)
+        self.star_standard = [20, 40, 60]
 
     def level_2(self):
         self.map_image = 'image_file\\Map_normal.png'
@@ -140,6 +144,7 @@ class Stage:
                           (4, 8), (0, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
         self.cac_count = len(self.cac_pos)
         self.block_count = len(self.block_pos)
+        self.star_standard = [40, 70, 100]
 
     def level_3(self):
         self.map_image = 'image_file\\Map_hard.png'
@@ -150,6 +155,7 @@ class Stage:
                           (1, 7), (1, 6), (0, 5), (1, 4), (0, 3), (1, 2), (2, 1), (3, 1), (4, 0), (5, 0), (6, 1)]
         self.cac_count = len(self.cac_pos)
         self.block_count = len(self.block_pos)
+        self.star_standard = [70, 100, 150]
 
     def level_4(self):
         self.map_image = 'image_file\\Map_4.png'
@@ -161,6 +167,7 @@ class Stage:
                           (0, 5), (0, 6)]
         self.cac_count = len(self.cac_pos)
         self.block_count = len(self.block_pos)
+        self.star_standard = [55, 85, 155]
 
     def setting_stage(self):
         self.map = load_image(self.map_image)
@@ -182,11 +189,21 @@ class Stage:
         cac_array.sort()
 
         if self.clear_pos == cac_array:
+            if self.player.move_count < self.star_standard[0]:
+                self.star_rank = 3
+            elif self.player.move_count < self.star_standard[1]:
+                self.star_rank = 2
+            elif self.player.move_count < self.star_standard[2]:
+                self.star_rank = 1
+            else:
+                self.star_rank = 0
             game_framework.push_state(stage_clear_state)
 
     def draw_stage(self):
         global now_stage
         self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
         self.text.draw(10, MAP_HEIGHT - 25, '스테이지 ' + str(now_stage), color=(255, 255, 255))
-        self.text.draw(10, MAP_HEIGHT - 50, '성적 ' + str(self.map_score[now_stage]), color=(255, 255, 255))
+        if self.max_map_score[now_stage] != NO_SCORE:
+            self.text.draw(10, MAP_HEIGHT - 50, '최고점수 : ' + str(self.max_map_score[now_stage]), color=(255, 255, 255))
+
 
