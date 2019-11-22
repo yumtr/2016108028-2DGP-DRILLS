@@ -11,17 +11,23 @@ star = [None, None, None, None]
 score = 1
 clear_time = 0.0
 score_text = []
-
+size_x = 0
+size_y = 0
+pop_speed = 5
 
 def enter():
-    global image, star, score_text, score
-    score_text = load_font('font\\CookieRun Bold.ttf')
+    global image, star, score_text, score, size_x, size_y, pop_speed, clear_time
+    score_text = load_font('font\\CookieRun Bold.ttf', 20)
     image = load_image('image_file\\Clear.png')
     star[0] = load_image('image_file\\star_0.png')
     star[1] = load_image('image_file\\star_1.png')
     star[2] = load_image('image_file\\star_2.png')
     star[3] = load_image('image_file\\star_3.png')
     score = Cactus_Family.game_stage.star_rank
+    size_x = 0
+    size_y = 0
+    pop_speed = 5
+    clear_time = 0.0
 
 
 def exit():
@@ -31,20 +37,27 @@ def exit():
 
 
 def update():
-    global clear_time
+    global clear_time, size_x, size_y, pop_speed
+    if size_x < 450:
+        size_x += 450 / 5 / pop_speed
+    if size_y < 356:
+        size_y += 356 / 5 / pop_speed
     if clear_time > 50.0:
         clear_time = 0
         resume()
     delay(0.01)
     clear_time += 0.05
+    if pop_speed != 1:
+        pop_speed -= 1
 
 
 def draw():
     clear_canvas()
     Cactus_Family.draw()
-    image.draw(450, 400)
-    star[score].draw(450, 400)
-    score_text.draw(MAP_WIDTH / 2 - 95, MAP_HEIGHT / 2 - 10, '최종 움직인 횟수 : ' + str(Cactus_Family.player.move_count), color=(255, 255, 255))
+    image.draw(450, 400, size_x, size_y)
+    star[score].draw(450, 400, size_x, size_y)
+    if clear_time > 0.3:
+        score_text.draw(MAP_WIDTH / 2 - 90, MAP_HEIGHT / 2 - 10, '최종 움직인 횟수 : ' + str(Cactus_Family.player.move_count), color=(255, 255, 255))
     update_canvas()
 
 

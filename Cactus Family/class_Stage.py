@@ -106,7 +106,7 @@ class Stage:
 
     def print_score(self):
         for i in range(MAX_LEVEL - 1):
-            self.text.draw(MAP_WIDTH / 2, MAP_HEIGHT / 3 - (50 * i), str(i + 1) + '스테이지 기록 ' + str(self.max_map_score[i + 1]), color=(255, 255, 255))
+            self.text.draw(MAP_WIDTH / 2 - 200, MAP_HEIGHT / 3 - (50 * i), str(i + 1) + '움직인 횟수 : ' + str(self.max_map_score[i + 1]), color=(255, 255, 255))
 
     def set_stage_score(self):
         if now_stage != MAX_LEVEL and self.max_map_score[now_stage] > self.player.move_count:
@@ -124,7 +124,7 @@ class Stage:
         self.block_count = len(self.block_pos)
 
     def level_1(self):
-        self.map_image = 'image_file\\Map_easy.png'
+        self.map_image = 'image_file\\Map_1.png'
         self.cac_pos = [(6, 3), (5, 6), (3, 6)]
         self.clear_pos = [(3, 3), (3, 4), (2, 4)]
         self.stone_pos = [4, 5]
@@ -135,7 +135,7 @@ class Stage:
         self.star_standard = [20, 40, 60]
 
     def level_2(self):
-        self.map_image = 'image_file\\Map_normal.png'
+        self.map_image = 'image_file\\Map_2.png'
         self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
         self.clear_pos = [(4, 4), (3, 4), (3, 5), (2, 4)]
         self.stone_pos = [4, 5]
@@ -147,7 +147,7 @@ class Stage:
         self.star_standard = [40, 70, 100]
 
     def level_3(self):
-        self.map_image = 'image_file\\Map_hard.png'
+        self.map_image = 'image_file\\Map_3.png'
         self.cac_pos = [(6, 4), (5, 8), (4, 2), (4, 4), (1, 3), (1, 5)]
         self.clear_pos = [(5, 4), (5, 5), (4, 3), (4, 4), (3, 4), (2, 4)]
         self.stone_pos = [4, 5]
@@ -202,8 +202,8 @@ class Stage:
     def draw_stage(self):
         global now_stage
         self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
-        self.text.draw(10, MAP_HEIGHT - 25, '스테이지 ' + str(now_stage), color=(255, 255, 255))
+        self.text.draw(45, MAP_HEIGHT - 25, '스테이지 - ' + str(now_stage), color=(255, 255, 255))
         if self.max_map_score[now_stage] != NO_SCORE:
-            self.text.draw(10, MAP_HEIGHT - 50, '최고점수 : ' + str(self.max_map_score[now_stage]), color=(255, 255, 255))
+            self.text.draw(45, 20, '최고점수 : ' + str(self.max_map_score[now_stage]), color=(255, 255, 255))
 
 

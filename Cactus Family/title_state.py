@@ -6,7 +6,7 @@ name = "TitleState"
 image = None
 menu_image = None
 arrow = None
-arrow_position = 350
+arrow_position = 250
 menu_num = 1
 
 
@@ -14,9 +14,10 @@ def choose_menu():
     if menu_num == 1:
         game_framework.change_state(Cactus_Family)
     elif menu_num == 2:
-        pass
-    elif menu_num == 3:
         game_framework.quit()
+    elif menu_num == 3:
+        # game_framework.quit()
+        pass
 
 
 def move_arrow(y_pos):
@@ -24,7 +25,7 @@ def move_arrow(y_pos):
     if y_pos == 0 and menu_num > 1:
         arrow_position += 100
         menu_num -= 1
-    elif y_pos == 1 and menu_num < 3:
+    elif y_pos == 1 and menu_num < 2:
         arrow_position -= 100
         menu_num += 1
 
@@ -59,7 +60,7 @@ def handle_events():
 def draw():
     clear_canvas()
     image.draw(450, 400)
-    menu_image.draw(450, 250)
+    menu_image.draw(450, 150)
     arrow.draw(235, arrow_position)
     update_canvas()
 
