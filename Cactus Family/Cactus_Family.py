@@ -64,8 +64,7 @@ def enter():
 
 
 def exit():
-    global player, game_stage, cactus_group
-    del player
+    global game_stage, cactus_group
     del game_stage
     del cactus_group
 
