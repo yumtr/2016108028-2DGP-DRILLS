@@ -6,6 +6,7 @@ import os
 from pico2d import *
 import game_framework
 import game_world
+import score_state
 
 import world_build_state
 
@@ -52,11 +53,20 @@ def handle_events():
             game_framework.change_state(world_build_state)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_s:
             game_world.save()
+            print('fdf')
         else:
             boy.handle_event(event)
 
 
 def update():
+    for zombie in world_build_state.zombie_list:
+        if collide(boy, zombie):
+            game_world.ranking.append(boy.time)
+            print(game_world.ranking)
+            game_world.ranking.sort()
+
+            game_framework.change_state(score_state)
+
     for game_object in game_world.all_objects():
         game_object.update()
 

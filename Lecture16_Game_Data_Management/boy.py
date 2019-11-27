@@ -128,29 +128,30 @@ class Boy:
         self.cur_state = WalkingState
         self.cur_state.enter(self, None)
         self.start_time = get_time()
+        self.time = 0
 
     def __getstate__(self):
-        # fill here
-        pass
+        state = {'x': self.x, 'y': self.y, 'dir': self.dir, 'cur_state': self.cur_state, 'time': self.time}
+        return state
 
     def __setstate__(self, state):
-        # fill here
-        pass
+        self.__init__()
+        self.__dict__.update(state)
 
     def get_bb(self):
         # fill here
         return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
-
     def fire_ball(self):
-        ball = Ball(self.x, self.y, self.dir * RUN_SPEED_PPS * 10)
-        game_world.add_object(ball, 1)
-
+        # ball = Ball(self.x, self.y, self.dir * RUN_SPEED_PPS * 10)
+        # game_world.add_object(ball, 1)
+        pass
 
     def add_event(self, event):
         self.event_que.insert(0, event)
 
     def update(self):
+        self.time = (get_time() - self.start_time)
         self.cur_state.do(self)
         if len(self.event_que) > 0:
             event = self.event_que.pop()
@@ -160,7 +161,8 @@ class Boy:
 
     def draw(self):
         self.cur_state.draw(self)
-        self.font.draw(self.x - 60, self.y + 50, '(Time: %3.2f)' % (get_time() - self.start_time), (0, 0, 0))
+
+        self.font.draw(self.x - 60, self.y + 50, '(Time: %3.2f)' % self.time, (0, 0, 0))
 
     def handle_event(self, event):
         if (event.type, event.key) in key_event_table:
