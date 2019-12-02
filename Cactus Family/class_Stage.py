@@ -4,6 +4,7 @@ from class_Cactus import Cactus
 import Cactus_Family
 import game_framework
 import stage_clear_state
+import pickle
 import ending_state
 
 MAX_LEVEL = 5
@@ -19,6 +20,9 @@ now_stage = 1
 cac = []
 block = []
 
+# data = [1, 2, 3]
+# with open('data.pickle', 'wb') as f:
+#     pickle.dump(data, f)
 
 def next_level():
     game_stage = Cactus_Family.get_game_stage()
@@ -180,6 +184,7 @@ class Stage:
             block[i].__init__(self.block_pos[i])
         # 선인장 그룹 초기화해주고 다시만들어줌
         setting_group()
+
 
     def check_stage_clear(self):
         cac_array = []
