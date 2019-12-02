@@ -7,6 +7,7 @@ import title_state
 from class_Group import Group
 from class_Stone import Stone
 from class_Stage import Stage, handle_Stage, cac, block
+import class_Stage
 
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
@@ -56,6 +57,8 @@ def handle_events():
 
 def enter():
     global player, game_stage, cactus_group
+    class_Stage.load_map_data()
+    class_Stage.map_stage[0].cac_count
     player = Stone()
     cactus_group = Group()
     game_stage = Stage()

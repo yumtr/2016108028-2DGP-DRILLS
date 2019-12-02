@@ -1,7 +1,6 @@
 from pico2d import *
 import Cactus_Family
 
-
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
@@ -9,7 +8,7 @@ ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
 
 class Stone:
-    def __init__(self, pos = [400, 300]):
+    def __init__(self, pos=[4, 3]):
         self.x = pos[1] * 100
         self.y = pos[0] * 100
         self.x_dir, self.y_dir = ST_X_NONE, ST_Y_NONE
@@ -105,7 +104,7 @@ class Stone:
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
 
     def render(self):
-        self.text.draw(MAP_WIDTH/2 - 60, MAP_HEIGHT - 25, '움직인 횟수 ' + str(self.move_count), color=(255, 255, 255))
+        self.text.draw(MAP_WIDTH / 2 - 60, MAP_HEIGHT - 25, '움직인 횟수 ' + str(self.move_count), color=(255, 255, 255))
         self.anime_cnt += 1
         if 46 > self.anime_cnt > 30:
             self.draw_image(15, 100, 100, 0)

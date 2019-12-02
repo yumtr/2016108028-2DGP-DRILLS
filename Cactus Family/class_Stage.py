@@ -4,7 +4,7 @@ from class_Cactus import Cactus
 import Cactus_Family
 import game_framework
 import stage_clear_state
-import pickle
+import json
 import ending_state
 
 MAX_LEVEL = 5
@@ -19,10 +19,18 @@ now_stage = 1
 
 cac = []
 block = []
+map_stage = []
 
-# data = [1, 2, 3]
-# with open('data.pickle', 'wb') as f:
-#     pickle.dump(data, f)
+
+def load_map_data():
+    global map_stage
+    with open('stage_data.json', 'r') as f:
+        map_data = json.load(f)
+    for data in map_data:
+        map_stage.append(
+            Stage(data['map_image'], data['cac_pos'], data['stone_pos'], data['block_pos'], data['clear_pos'],
+                  data['star_standard']))
+
 
 def next_level():
     game_stage = Cactus_Family.get_game_stage()
@@ -36,22 +44,21 @@ def next_level():
 
 def change_stage(level):
     game_stage = Cactus_Family.get_game_stage()
-    if level == 1:
-        game_stage.level_1()
-    elif level == 2:
-        game_stage.level_2()
-    elif level == 3:
-        game_stage.level_3()
-    elif level == 4:
-        game_stage.level_4()
-    elif level == 't':
-        game_stage.test_stage()
-    else:
-        game_stage.test_stage()
+    game_stage.set_test(level)
+    # if level == 1:
+    #     game_stage.level_1()
+    # elif level == 2:
+    #     game_stage.level_2()
+    # elif level == 3:
+    #     game_stage.level_3()
+    # elif level == 4:
+    #     game_stage.level_4()
+    # elif level == 't':
+    #     game_stage.test_stage()
+    # else:
+    #     game_stage.test_stage()
+
     game_stage.setting_stage()
-
-
-# game_framework.push_state(ending_state)
 
 
 def handle_Stage(event):
@@ -60,12 +67,15 @@ def handle_Stage(event):
     if event.type == SDL_KEYDOWN:
         if event.key == SDLK_r:
             change_stage(now_stage)
+            # load_map_data()
         elif event.key == SDLK_1:
             now_stage = 1
             change_stage(now_stage)
         elif event.key == SDLK_2:
             now_stage = 2
             change_stage(now_stage)
+            # print(map_stage[2].stone_pos)
+            # map_stage[2].setting_stage()
         elif event.key == SDLK_3:
             now_stage = 3
             change_stage(now_stage)
@@ -92,25 +102,26 @@ def setting_group():
 class Stage:
     global cac, now_stage
 
-    def __init__(self):
+    def __init__(self, map_image='hi', cac_pos=[], stone_pos=[], block_pos=[], clear_pos=[], star_standard=[]):
         self.text = load_font('font\\CookieRun Bold.ttf')
-        self.cac_pos = []
-        self.block_pos = []
-        self.stone_pos = []
-        self.clear_pos = []
-        self.cac_count = 0
-        self.block_count = 0
-        self.map_image = 'hi'
+        self.map_image = map_image
+        self.cac_pos = cac_pos
+        self.block_pos = block_pos
+        self.stone_pos = stone_pos
+        self.clear_pos = clear_pos
+        self.star_standard = star_standard
+        self.cac_count = len(self.cac_pos)
+        self.block_count = len(self.block_pos)
         self.map = 0
         self.star_rank = 0
-        self.star_standard = [0, 0, 0]
         self.max_map_score = [NO_SCORE for i in range(6)]
         self.player = Cactus_Family.get_stone()
         self.star_level = 0
 
     def print_score(self):
         for i in range(MAX_LEVEL - 1):
-            self.text.draw(MAP_WIDTH / 2 - 200, MAP_HEIGHT / 3 - (50 * i), str(i + 1) + '움직인 횟수 : ' + str(self.max_map_score[i + 1]), color=(255, 255, 255))
+            self.text.draw(MAP_WIDTH / 2 - 200, MAP_HEIGHT / 3 - (50 * i),
+                           str(i + 1) + '움직인 횟수 : ' + str(self.max_map_score[i + 1]), color=(255, 255, 255))
 
     def set_stage_score(self):
         if now_stage != MAX_LEVEL and self.max_map_score[now_stage] > self.player.move_count:
@@ -173,18 +184,51 @@ class Stage:
         self.block_count = len(self.block_pos)
         self.star_standard = [55, 85, 155]
 
+    def set_test(self, level):
+        self.map_image = map_stage[level].map_image
+        print(map_stage[level].map_image)
+
+        for i in range(len(map_stage[level].cac_pos)):
+            map_stage[level].cac_pos[i] = list(map(int, map_stage[level].cac_pos[i]))
+        self.cac_pos = map_stage[level].cac_pos
+        print('선인장', self.cac_pos)
+        for i in range(len(map_stage[level].clear_pos)):
+            map_stage[level].clear_pos[i] = list(map(int, map_stage[level].clear_pos[i]))
+        self.clear_pos = map_stage[level].clear_pos
+        print('클리어', self.clear_pos)
+
+        self.stone_pos = list(map(int, map_stage[level].stone_pos))
+        print('돌', self.stone_pos)
+
+        for i in range(len(map_stage[level].block_pos)):
+            map_stage[level].block_pos[i] = list(map(int, map_stage[level].block_pos[i]))
+        self.block_pos = map_stage[level].block_pos
+        print('블럭', self.block_pos)
+
+        for i in range(len(map_stage[level].star_standard)):
+            map_stage[level].star_standard[i] = list(map(int, map_stage[level].star_standard[i]))
+        self.star_standard = map_stage[level].star_standard
+        print('등급', self.star_standard)
+
+        self.cac_count = map_stage[level].cac_count
+        print('선인장 수', map_stage[level].cac_count)
+        self.block_count = map_stage[level].block_count
+        print('블럭 수', map_stage[level].block_count)
+
     def setting_stage(self):
+
         self.map = load_image(self.map_image)
+        print('??', self.stone_pos)
         self.player.__init__(self.stone_pos)
+        print('세팅')
         for i in range(self.cac_count):
-            cac.append(Cactus())
-            cac[i].__init__(self.cac_pos[i])
+            cac.append(Cactus(self.cac_pos[i]))
+
         for i in range(self.block_count):
             block.append(Block())
             block[i].__init__(self.block_pos[i])
         # 선인장 그룹 초기화해주고 다시만들어줌
         setting_group()
-
 
     def check_stage_clear(self):
         cac_array = []
@@ -210,5 +254,3 @@ class Stage:
         self.text.draw(45, MAP_HEIGHT - 25, '스테이지 - ' + str(now_stage), color=(255, 255, 255))
         if self.max_map_score[now_stage] != NO_SCORE:
             self.text.draw(45, 20, '최고점수 : ' + str(self.max_map_score[now_stage]), color=(255, 255, 255))
-
-
