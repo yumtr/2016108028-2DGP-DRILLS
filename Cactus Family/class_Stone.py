@@ -55,7 +55,7 @@ class Stone:
         self.y = pos[0] * 100
 
     def get_pos(self):
-        return self.y / 100, self.x / 100
+        return [self.y / 100, self.x / 100]
 
     def draw_image(self, count, x_size, y_size, low):
         self.obj.clip_draw(self.frame * x_size, low * x_size, x_size, y_size, self.x, self.y)

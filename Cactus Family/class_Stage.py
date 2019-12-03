@@ -67,15 +67,12 @@ def handle_Stage(event):
     if event.type == SDL_KEYDOWN:
         if event.key == SDLK_r:
             change_stage(now_stage)
-            # load_map_data()
         elif event.key == SDLK_1:
             now_stage = 1
             change_stage(now_stage)
         elif event.key == SDLK_2:
             now_stage = 2
             change_stage(now_stage)
-            # print(map_stage[2].stone_pos)
-            # map_stage[2].setting_stage()
         elif event.key == SDLK_3:
             now_stage = 3
             change_stage(now_stage)
@@ -83,7 +80,7 @@ def handle_Stage(event):
             now_stage = 4
             change_stage(now_stage)
         elif event.key == SDLK_t:
-            change_stage('t')
+            change_stage(0)
             for i in range(game_stage.cac_count):
                 cac[i].random_pos()
 
@@ -186,8 +183,7 @@ class Stage:
 
     def set_test(self, level):
         self.map_image = map_stage[level].map_image
-        print(map_stage[level].map_image)
-
+        print('맵이름', map_stage[level].map_image)
         for i in range(len(map_stage[level].cac_pos)):
             map_stage[level].cac_pos[i] = list(map(int, map_stage[level].cac_pos[i]))
         self.cac_pos = map_stage[level].cac_pos
@@ -196,34 +192,27 @@ class Stage:
             map_stage[level].clear_pos[i] = list(map(int, map_stage[level].clear_pos[i]))
         self.clear_pos = map_stage[level].clear_pos
         print('클리어', self.clear_pos)
-
         self.stone_pos = list(map(int, map_stage[level].stone_pos))
         print('돌', self.stone_pos)
-
         for i in range(len(map_stage[level].block_pos)):
             map_stage[level].block_pos[i] = list(map(int, map_stage[level].block_pos[i]))
         self.block_pos = map_stage[level].block_pos
         print('블럭', self.block_pos)
-
-        for i in range(len(map_stage[level].star_standard)):
-            map_stage[level].star_standard[i] = list(map(int, map_stage[level].star_standard[i]))
-        self.star_standard = map_stage[level].star_standard
+        self.star_standard = list(map(int, map_stage[level].star_standard))
         print('등급', self.star_standard)
-
         self.cac_count = map_stage[level].cac_count
         print('선인장 수', map_stage[level].cac_count)
         self.block_count = map_stage[level].block_count
         print('블럭 수', map_stage[level].block_count)
 
     def setting_stage(self):
-
+        cac.clear()
+        block.clear()
+        # TODO 왜 클리어안됨????????????????????????????
         self.map = load_image(self.map_image)
-        print('??', self.stone_pos)
         self.player.__init__(self.stone_pos)
-        print('세팅')
         for i in range(self.cac_count):
             cac.append(Cactus(self.cac_pos[i]))
-
         for i in range(self.block_count):
             block.append(Block())
             block[i].__init__(self.block_pos[i])
@@ -233,11 +222,14 @@ class Stage:
     def check_stage_clear(self):
         cac_array = []
         for i in range(self.cac_count):
-            cac_array.append((cac[i].get_pos()))
+            cac_array.append(cac[i].get_pos())
         self.clear_pos.sort()
         cac_array.sort()
 
+        # print('클리어1', self.clear_pos)
+        # print('클리어2', cac_array)
         if self.clear_pos == cac_array:
+            print('????????')
             if self.player.move_count < self.star_standard[0]:
                 self.star_rank = 3
             elif self.player.move_count < self.star_standard[1]:
