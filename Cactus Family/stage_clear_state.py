@@ -14,9 +14,11 @@ score_text = []
 size_x = 0
 size_y = 0
 pop_speed = 5
+clear_sound = None
+
 
 def enter():
-    global image, star, score_text, score, size_x, size_y, pop_speed, clear_time
+    global image, star, score_text, score, size_x, size_y, pop_speed, clear_time, clear_sound
     score_text = load_font('font\\CookieRun Bold.ttf', 20)
     image = load_image('image_file\\Clear.png')
     star[0] = load_image('image_file\\star_0.png')
@@ -28,12 +30,15 @@ def enter():
     size_y = 0
     pop_speed = 5
     clear_time = 0.0
+    clear_sound = load_wav('sound_effect\\00002991.wav')
+    clear_sound.set_volume(100)
+    clear_sound.play()
 
 
 def exit():
-    # global image
+    global clear_sound
     # del image
-    pass
+    clear_sound.set_volume(0)
 
 
 def update():

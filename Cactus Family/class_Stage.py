@@ -57,7 +57,6 @@ def change_stage(level):
     #     game_stage.test_stage()
     # else:
     #     game_stage.test_stage()
-
     game_stage.setting_stage()
 
 
@@ -96,8 +95,16 @@ def setting_group():
         cactus_group.single_cactus.append(i)
 
 
+def get_cactus():
+    return cac
+
+
+def get_block():
+    return block
+
+
 class Stage:
-    global cac, now_stage
+    global now_stage
 
     def __init__(self, map_image='hi', cac_pos=[], stone_pos=[], block_pos=[], clear_pos=[], star_standard=[]):
         self.text = load_font('font\\CookieRun Bold.ttf')
@@ -135,51 +142,51 @@ class Stage:
         self.cac_count = len(self.cac_pos)
         self.block_count = len(self.block_pos)
 
-    def level_1(self):
-        self.map_image = 'image_file\\Map_1.png'
-        self.cac_pos = [(6, 3), (5, 6), (3, 6)]
-        self.clear_pos = [(3, 3), (3, 4), (2, 4)]
-        self.stone_pos = [4, 5]
-        self.block_pos = [(7, 3), (8, 4), (8, 5), (7, 6), (6, 7), (5, 8), (4, 9), (3, 8), (2, 7),
-                          (1, 6), (0, 5), (0, 4), (1, 3), (2, 2), (3, 1), (4, 2), (5, 1), (6, 2)]
-        self.cac_count = len(self.cac_pos)
-        self.block_count = len(self.block_pos)
-        self.star_standard = [20, 40, 60]
-
-    def level_2(self):
-        self.map_image = 'image_file\\Map_2.png'
-        self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
-        self.clear_pos = [(4, 4), (3, 4), (3, 5), (2, 4)]
-        self.stone_pos = [4, 5]
-        self.block_pos = [(8, 4), (4, 0), (3, 0), (0, 3), (1, 4), (0, 5), (0, 6),
-                          (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
-                          (4, 8), (0, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
-        self.cac_count = len(self.cac_pos)
-        self.block_count = len(self.block_pos)
-        self.star_standard = [40, 70, 100]
-
-    def level_3(self):
-        self.map_image = 'image_file\\Map_3.png'
-        self.cac_pos = [(6, 4), (5, 8), (4, 2), (4, 4), (1, 3), (1, 5)]
-        self.clear_pos = [(5, 4), (5, 5), (4, 3), (4, 4), (3, 4), (2, 4)]
-        self.stone_pos = [4, 5]
-        self.block_pos = [(7, 2), (7, 3), (7, 4), (6, 5), (7, 6), (7, 7), (6, 8), (5, 9), (4, 9), (3, 9), (2, 8),
-                          (1, 7), (1, 6), (0, 5), (1, 4), (0, 3), (1, 2), (2, 1), (3, 1), (4, 0), (5, 0), (6, 1)]
-        self.cac_count = len(self.cac_pos)
-        self.block_count = len(self.block_pos)
-        self.star_standard = [70, 100, 150]
-
-    def level_4(self):
-        self.map_image = 'image_file\\Map_4.png'
-        self.cac_pos = [(7, 7), (6, 4), (5, 5), (6, 7), (4, 2), (3, 3), (2, 6), (1, 6)]
-        self.clear_pos = [(5, 6), (4, 4), (4, 5), (4, 6), (3, 2), (3, 3), (3, 4), (2, 4)]
-        self.stone_pos = [4, 5]
-        self.block_pos = [(8, 2), (8, 7), (7, 1), (7, 3), (7, 4), (7, 5), (7, 6), (7, 8), (6, 1), (6, 9), (5, 0),
-                          (5, 8), (4, 0), (4, 9), (3, 0), (3, 9), (2, 1), (2, 8), (1, 2), (1, 7), (0, 3), (0, 4),
-                          (0, 5), (0, 6)]
-        self.cac_count = len(self.cac_pos)
-        self.block_count = len(self.block_pos)
-        self.star_standard = [55, 85, 155]
+    # def level_1(self):
+    #     self.map_image = 'image_file\\Map_1.png'
+    #     self.cac_pos = [(6, 3), (5, 6), (3, 6)]
+    #     self.clear_pos = [(3, 3), (3, 4), (2, 4)]
+    #     self.stone_pos = [4, 5]
+    #     self.block_pos = [(7, 3), (8, 4), (8, 5), (7, 6), (6, 7), (5, 8), (4, 9), (3, 8), (2, 7),
+    #                       (1, 6), (0, 5), (0, 4), (1, 3), (2, 2), (3, 1), (4, 2), (5, 1), (6, 2)]
+    #     self.cac_count = len(self.cac_pos)
+    #     self.block_count = len(self.block_pos)
+    #     self.star_standard = [20, 40, 60]
+    #
+    # def level_2(self):
+    #     self.map_image = 'image_file\\Map_2.png'
+    #     self.cac_pos = [(2, 2), (6, 3), (2, 6), (2, 7)]
+    #     self.clear_pos = [(4, 4), (3, 4), (3, 5), (2, 4)]
+    #     self.stone_pos = [4, 5]
+    #     self.block_pos = [(8, 4), (4, 0), (3, 0), (0, 3), (1, 4), (0, 5), (0, 6),
+    #                       (3, 9), (2, 9), (7, 3), (7, 5), (7, 6), (6, 7), (5, 8),
+    #                       (4, 8), (0, 8), (1, 7), (1, 2), (2, 1), (5, 1), (6, 2)]
+    #     self.cac_count = len(self.cac_pos)
+    #     self.block_count = len(self.block_pos)
+    #     self.star_standard = [40, 70, 100]
+    #
+    # def level_3(self):
+    #     self.map_image = 'image_file\\Map_3.png'
+    #     self.cac_pos = [(6, 4), (5, 8), (4, 2), (4, 4), (1, 3), (1, 5)]
+    #     self.clear_pos = [(5, 4), (5, 5), (4, 3), (4, 4), (3, 4), (2, 4)]
+    #     self.stone_pos = [4, 5]
+    #     self.block_pos = [(7, 2), (7, 3), (7, 4), (6, 5), (7, 6), (7, 7), (6, 8), (5, 9), (4, 9), (3, 9), (2, 8),
+    #                       (1, 7), (1, 6), (0, 5), (1, 4), (0, 3), (1, 2), (2, 1), (3, 1), (4, 0), (5, 0), (6, 1)]
+    #     self.cac_count = len(self.cac_pos)
+    #     self.block_count = len(self.block_pos)
+    #     self.star_standard = [70, 100, 150]
+    #
+    # def level_4(self):
+    #     self.map_image = 'image_file\\Map_4.png'
+    #     self.cac_pos = [(7, 7), (6, 4), (5, 5), (6, 7), (4, 2), (3, 3), (2, 6), (1, 6)]
+    #     self.clear_pos = [(5, 6), (4, 4), (4, 5), (4, 6), (3, 2), (3, 3), (3, 4), (2, 4)]
+    #     self.stone_pos = [4, 5]
+    #     self.block_pos = [(8, 2), (8, 7), (7, 1), (7, 3), (7, 4), (7, 5), (7, 6), (7, 8), (6, 1), (6, 9), (5, 0),
+    #                       (5, 8), (4, 0), (4, 9), (3, 0), (3, 9), (2, 1), (2, 8), (1, 2), (1, 7), (0, 3), (0, 4),
+    #                       (0, 5), (0, 6)]
+    #     self.cac_count = len(self.cac_pos)
+    #     self.block_count = len(self.block_pos)
+    #     self.star_standard = [55, 85, 155]
 
     def set_test(self, level):
         self.map_image = map_stage[level].map_image
@@ -226,10 +233,7 @@ class Stage:
         self.clear_pos.sort()
         cac_array.sort()
 
-        # print('클리어1', self.clear_pos)
-        # print('클리어2', cac_array)
         if self.clear_pos == cac_array:
-            print('????????')
             if self.player.move_count < self.star_standard[0]:
                 self.star_rank = 3
             elif self.player.move_count < self.star_standard[1]:

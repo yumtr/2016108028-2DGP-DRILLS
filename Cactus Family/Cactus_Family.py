@@ -58,11 +58,10 @@ def handle_events():
 def enter():
     global player, game_stage, cactus_group
     class_Stage.load_map_data()
-    class_Stage.map_stage[0].cac_count
     player = Stone()
     cactus_group = Group()
     game_stage = Stage()
-    game_stage.level_1()
+    game_stage.set_test(1)
     game_stage.setting_stage()
 
 

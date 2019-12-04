@@ -1,6 +1,5 @@
 from pico2d import *
 import random
-from class_Stone import Stone
 import Cactus_Family
 
 MAP_WIDTH = 900
@@ -9,8 +8,10 @@ LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
 
-class Cactus(Stone):
-    def __init__(self, pos=[4, 3]):
+class Cactus:
+    def __init__(self, pos=None):
+        if pos is None:
+            pos = [4, 3]
         self.x = pos[1] * 100
         self.y = pos[0] * 100
         self.x_dir, self.y_dir = ST_X_NONE, ST_Y_NONE
@@ -21,6 +22,31 @@ class Cactus(Stone):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
         self.is_collision = False
         self.is_movable = True
+
+    def move(self):
+        if self.x_dir == ST_X_FORWARD:
+            self.x += self.speed
+            if self.x >= self.old_x:
+                self.x_dir = ST_X_NONE
+        elif self.x_dir == ST_X_BAKWARD:
+            self.x -= self.speed
+            if self.x <= self.old_x:
+                self.x_dir = ST_X_NONE
+        elif self.y_dir == ST_Y_UP:
+            self.y += self.speed
+            if self.y >= self.old_y:
+                self.y_dir = ST_Y_NONE
+        elif self.y_dir == ST_Y_DOWN:
+            self.y -= self.speed
+            if self.y <= self.old_y:
+                self.y_dir = ST_Y_NONE
+
+    def draw_image(self, count, x_size, y_size, low):
+        self.obj.clip_draw(self.frame * x_size, low * x_size, x_size, y_size, self.x, self.y)
+        self.frame = (self.frame + 1) % count
+
+    def get_pos(self):
+        return [self.y / 100, self.x / 100]
 
     def random_pos(self):
         self.x = random.randint(1, 8) * 100

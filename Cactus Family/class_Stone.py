@@ -1,10 +1,12 @@
 from pico2d import *
 import Cactus_Family
+from class_Stage import get_block
 
 MAP_WIDTH = 900
 MAP_HEIGHT = 800
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
+CANT_FORWARD, CANT_BAKWARD, CANT_UP, CANT_DOWN = range(4)
 
 
 class Stone:
@@ -25,6 +27,10 @@ class Stone:
         self.down_access = True
         self.move_count = 0
         self.stage_move_count = []
+        self.move_sound = load_wav('sound_effect\\000029f8.wav')
+        self.move_sound.set_volume(100)
+        self.block_sound = load_wav('sound_effect\\stone_push_hard.wav')
+        self.block_sound.set_volume(52)
 
     def get_move_count(self):
         self.stage_move_count.append(self.move_count)
@@ -79,25 +85,50 @@ class Stone:
             if self.y <= self.old_y:
                 self.y_dir = ST_Y_NONE
 
+    def is_block_around_stone(self, move_type):
+        for block in get_block():
+            if move_type == ST_X_FORWARD and self.rect[2] == block.rect[0] and self.y == block.y:
+                print('넌 앞으로 못가')
+                return False
+            elif move_type == ST_X_BAKWARD and self.rect[0] == block.rect[2] and self.y == block.y:
+                print('넌 뒤로 못가')
+                return False
+            elif move_type == ST_Y_UP and self.rect[1] == block.rect[3] and self.x == block.x:
+                print('넌 위로 못가')
+                return False
+            elif move_type == ST_Y_DOWN and self.rect[3] == block.rect[1] and self.x == block.x:
+                print('넌 밑으로 못가')
+                return False
+        return True
+
     def handle_Stone(self, event):
         if event.type == SDL_KEYDOWN and self.x_dir == ST_X_NONE and self.y_dir == ST_Y_NONE:
-            if self.x_dir == ST_X_NONE and self.y_dir == ST_Y_NONE:
-                if event.key in (SDLK_RIGHT, SDLK_d) and self.rect[2] < MAP_WIDTH - 50 and self.forward_access:
-                    self.x_dir = ST_X_FORWARD
-                    self.old_x = self.x + 100
-                    self.move_count += 1
-                elif event.key in (SDLK_LEFT, SDLK_a) and 50 < self.rect[0] and self.bakward_access:
-                    self.x_dir = ST_X_BAKWARD
-                    self.old_x = self.x - 100
-                    self.move_count += 1
-                elif event.key in (SDLK_UP, SDLK_w) and self.rect[1] < MAP_WIDTH - 150 and self.up_access:
-                    self.y_dir = ST_Y_UP
-                    self.old_y = self.y + 100
-                    self.move_count += 1
-                elif event.key in (SDLK_DOWN, SDLK_s) and 50 < self.rect[3] and self.down_access:
-                    self.y_dir = ST_Y_DOWN
-                    self.old_y = self.y - 100
-                    self.move_count += 1
+            if event.key in (SDLK_RIGHT, SDLK_d) and self.rect[2] < MAP_WIDTH - 50 \
+                    and self.forward_access and self.is_block_around_stone(ST_X_FORWARD):
+                self.x_dir = ST_X_FORWARD
+                self.old_x = self.x + 100
+                self.move_count += 1
+                self.move_sound.play()
+            elif event.key in (SDLK_LEFT, SDLK_a) and 50 < self.rect[0] \
+                    and self.bakward_access and self.is_block_around_stone(ST_X_BAKWARD):
+                self.x_dir = ST_X_BAKWARD
+                self.old_x = self.x - 100
+                self.move_count += 1
+                self.move_sound.play()
+            elif event.key in (SDLK_UP, SDLK_w) and self.rect[1] < MAP_WIDTH - 150 \
+                    and self.up_access and self.is_block_around_stone(ST_Y_UP):
+                self.y_dir = ST_Y_UP
+                self.old_y = self.y + 100
+                self.move_count += 1
+                self.move_sound.play()
+            elif event.key in (SDLK_DOWN, SDLK_s) and 50 < self.rect[3] \
+                    and self.down_access and self.is_block_around_stone(ST_Y_DOWN):
+                self.y_dir = ST_Y_DOWN
+                self.old_y = self.y - 100
+                self.move_count += 1
+                self.move_sound.play()
+            else:
+                self.block_sound.play()
 
     def update(self):
         self.move()
