@@ -1,18 +1,15 @@
 from pico2d import *
 import Cactus_Family
-from class_Stage import get_block
+from class_Stage import get_block, get_cactus
 
-MAP_WIDTH = 900
-MAP_HEIGHT = 800
+MAP_WIDTH, MAP_HEIGHT = 900, 800
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
-CANT_FORWARD, CANT_BAKWARD, CANT_UP, CANT_DOWN = range(4)
 
 
 class Stone:
     def __init__(self, pos=[4, 3]):
-        self.x = pos[1] * 100
-        self.y = pos[0] * 100
+        self.x, self.y = pos[1] * 100, pos[0] * 100
         self.x_dir, self.y_dir = ST_X_NONE, ST_Y_NONE
         self.frame = 0
         self.obj = load_image('image_file\\stone_sprites.png')
@@ -51,7 +48,6 @@ class Stone:
             elif move_type == ST_Y_DOWN and self.rect[3] == Cactus_Family.cac[i].rect[1] \
                     and self.x == Cactus_Family.cac[i].x and Cactus_Family.cac[i].is_collision:
                 self.down_access = False
-            pass
 
     def set_image(self, filename):
         self.obj = load_image(filename)
@@ -87,17 +83,33 @@ class Stone:
 
     def is_block_around_stone(self, move_type):
         for block in get_block():
-            if move_type == ST_X_FORWARD and self.rect[2] == block.rect[0] and self.y == block.y:
-                print('넌 앞으로 못가')
+            if move_type == ST_X_FORWARD and self.rect[2] == block.rect[0] \
+                    and self.y == block.y:
                 return False
-            elif move_type == ST_X_BAKWARD and self.rect[0] == block.rect[2] and self.y == block.y:
-                print('넌 뒤로 못가')
+            elif move_type == ST_X_BAKWARD and self.rect[0] == block.rect[2] \
+                    and self.y == block.y:
                 return False
-            elif move_type == ST_Y_UP and self.rect[1] == block.rect[3] and self.x == block.x:
-                print('넌 위로 못가')
+            elif move_type == ST_Y_UP and self.rect[1] == block.rect[3] \
+                    and self.x == block.x:
                 return False
-            elif move_type == ST_Y_DOWN and self.rect[3] == block.rect[1] and self.x == block.x:
-                print('넌 밑으로 못가')
+            elif move_type == ST_Y_DOWN and self.rect[3] == block.rect[1] \
+                    and self.x == block.x:
+                return False
+        return self.is_cactus_around_stone(move_type)
+
+    def is_cactus_around_stone(self, move_type):
+        for cactus in get_cactus():
+            if move_type == ST_X_FORWARD and self.rect[2] == cactus.rect[0] and self.y == cactus.y\
+                    and not cactus.is_block_around(ST_X_FORWARD):
+                return False
+            elif move_type == ST_X_BAKWARD and self.rect[0] == cactus.rect[2] and self.y == cactus.y\
+                    and not cactus.is_block_around(ST_X_BAKWARD):
+                return False
+            elif move_type == ST_Y_UP and self.rect[1] == cactus.rect[3] and self.x == cactus.x\
+                    and not cactus.is_block_around(ST_Y_UP):
+                return False
+            elif move_type == ST_Y_DOWN and self.rect[3] == cactus.rect[1] and self.x == cactus.x\
+                    and not cactus.is_block_around(ST_Y_DOWN):
                 return False
         return True
 

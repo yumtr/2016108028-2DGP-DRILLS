@@ -12,60 +12,16 @@ def is_player_collision_to_cac_group(group):
 
 
 class Block:
-    def __init__(self, pos = [400, 300]):
-        self.x = pos[1] * 100
-        self.y = pos[0] * 100
+    def __init__(self, pos=None):
+        if pos is None:
+            pos = [400, 300]
+        self.x, self.y = pos[1] * 100, pos[0] * 100
         self.rect = self.x - 50, self.y + 50, self.x + 50, self.y - 50
         self.collision_judgment = True
 
     def set_position(self, pos):
         self.x = pos[1] * 100
         self.y = pos[0] * 100
-
-    # 플레이어랑 벽하고 충돌
-    def collision_stone_to_block(self):
-        if self.rect[0] + Cactus_Family.player.speed == Cactus_Family.player.rect[2] \
-                and self.y == Cactus_Family.player.y:
-            Cactus_Family.player.x_dir = ST_X_NONE
-            Cactus_Family.player.x -= Cactus_Family.player.speed
-        elif self.rect[2] - Cactus_Family.player.speed == Cactus_Family.player.rect[0] \
-                and self.y == Cactus_Family.player.y:
-            Cactus_Family.player.x_dir = ST_X_NONE
-            Cactus_Family.player.x += Cactus_Family.player.speed
-        elif self.rect[1] - Cactus_Family.player.speed == Cactus_Family.player.rect[3] \
-                and self.x == Cactus_Family.player.x:
-            Cactus_Family.player.y_dir = ST_Y_NONE
-            Cactus_Family.player.y += Cactus_Family.player.speed
-        elif self.rect[3] + Cactus_Family.player.speed == Cactus_Family.player.rect[1] \
-                and self.x == Cactus_Family.player.x:
-            Cactus_Family.player.y_dir = ST_Y_NONE
-            Cactus_Family.player.y -= Cactus_Family.player.speed
-
-    # 싱글 선인장이랑 벽하고 충돌
-    def collision_single_cactus_to_block(self, ano):
-        if self.rect[0] + ano.speed == ano.rect[2] and self.y == ano.y:
-            Cactus_Family.player.x_dir = ST_X_NONE
-            Cactus_Family.player.x -= Cactus_Family.player.speed * 2
-            ano.x_dir = ST_X_NONE
-            ano.x -= ano.speed
-
-        elif self.rect[2] - ano.speed == ano.rect[0] and self.y == ano.y:
-            Cactus_Family.player.x_dir = ST_X_NONE
-            Cactus_Family.player.x += Cactus_Family.player.speed * 2
-            ano.x_dir = ST_X_NONE
-            ano.x += ano.speed
-
-        elif self.rect[1] - ano.speed == ano.rect[3] and self.x == ano.x:
-            Cactus_Family.player.y_dir = ST_Y_NONE
-            Cactus_Family.player.y += Cactus_Family.player.speed * 2
-            ano.y_dir = ST_Y_NONE
-            ano.y += ano.speed
-
-        elif self.rect[3] + ano.speed == ano.rect[1] and self.x == ano.x:
-            Cactus_Family.player.y_dir = ST_Y_NONE
-            Cactus_Family.player.y -= Cactus_Family.player.speed * 2
-            ano.y_dir = ST_Y_NONE
-            ano.y -= ano.speed
 
     # 그룹 선인장이랑 벽하고 충돌
     def collision_group_cactus_to_block(self, group):
@@ -89,10 +45,6 @@ class Block:
 
     def update(self):
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
-        self.collision_stone_to_block()
-
-        for i in Cactus_Family.cactus_group.single_cactus:
-            self.collision_single_cactus_to_block(Cactus_Family.cac[i])
 
         self.collision_judgment = True
         for i in Cactus_Family.cactus_group.merge_cactus_groups:

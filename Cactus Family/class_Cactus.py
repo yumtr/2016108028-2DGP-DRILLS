@@ -1,9 +1,9 @@
 from pico2d import *
 import random
 import Cactus_Family
+import class_Stage
 
-MAP_WIDTH = 900
-MAP_HEIGHT = 800
+MAP_WIDTH, MAP_HEIGHT = 900, 800
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
@@ -22,6 +22,22 @@ class Cactus:
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
         self.is_collision = False
         self.is_movable = True
+
+    def is_block_around(self, move_type):
+        for block in class_Stage.get_block():
+            if move_type == ST_X_FORWARD and self.rect[2] == block.rect[0] and self.y == block.y:
+                print('넌 앞으로 못가')
+                return False
+            elif move_type == ST_X_BAKWARD and self.rect[0] == block.rect[2] and self.y == block.y:
+                print('넌 뒤로 못가')
+                return False
+            elif move_type == ST_Y_UP and self.rect[1] == block.rect[3] and self.x == block.x:
+                print('넌 위로 못가')
+                return False
+            elif move_type == ST_Y_DOWN and self.rect[3] == block.rect[1] and self.x == block.x:
+                print('넌 밑으로 못가')
+                return False
+        return True
 
     def move(self):
         if self.x_dir == ST_X_FORWARD:

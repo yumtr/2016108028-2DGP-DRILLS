@@ -5,11 +5,9 @@ import Cactus_Family
 import game_framework
 import stage_clear_state
 import json
-import ending_state
 
-MAX_LEVEL = 5
-MAP_WIDTH = 900
-MAP_HEIGHT = 800
+MAX_LEVEL = 5   # 이딴거 쓰는거 바꿔야함
+MAP_WIDTH, MAP_HEIGHT = 900, 800
 NO_SCORE = 10000
 LEFT_COLLISION, TOP_COLLISION, RIGHT_COLLISION, BOTTOM_COLLISION = range(4)
 ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
@@ -215,7 +213,6 @@ class Stage:
     def setting_stage(self):
         cac.clear()
         block.clear()
-        # TODO 왜 클리어안됨????????????????????????????
         self.map = load_image(self.map_image)
         self.player.__init__(self.stone_pos)
         for i in range(self.cac_count):
