@@ -30,7 +30,7 @@ def enter():
     size_y = 0
     pop_speed = 5
     clear_time = 0.0
-    clear_sound = load_wav('sound_effect\\00002991.wav')
+    clear_sound = load_wav('sound_effect\\clear_sound.wav')
     clear_sound.set_volume(100)
     clear_sound.play()
 
@@ -72,7 +72,7 @@ def pause():
 
 def resume():
     class_Stage.next_level()
-    if class_Stage.now_stage == class_Stage.MAX_LEVEL:
+    if class_Stage.now_stage == class_Stage.map_amount:
         game_framework.change_state(ending_state)
     else:
         game_framework.pop_state()

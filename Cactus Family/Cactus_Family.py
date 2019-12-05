@@ -61,13 +61,12 @@ def enter():
     player = Stone()
     cactus_group = Group()
     game_stage = Stage()
-    game_stage.set_test(1)
+    game_stage.set_map_data(1)
     game_stage.setting_stage()
 
 
 def exit():
-    global game_stage, cactus_group
-    del game_stage
+    global cactus_group
     del cactus_group
 
 

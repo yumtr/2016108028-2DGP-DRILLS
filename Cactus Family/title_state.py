@@ -8,6 +8,9 @@ menu_image = None
 arrow = None
 arrow_position = 250
 menu_num = 1
+bgm = None
+select_sound = None
+choose_sound = None
 
 
 def choose_menu():
@@ -31,14 +34,22 @@ def move_arrow(y_pos):
 
 
 def enter():
-    global image, menu_image, arrow
+    global image, menu_image, arrow, select_sound, choose_sound, bgm
     image = load_image('image_file\\title.png')
     menu_image = load_image('image_file\\menu.png')
     arrow = load_image('image_file\\arrow.png')
+    select_sound = load_wav('sound_effect\\000029ef.wav')
+    select_sound.set_volume(100)
+    choose_sound = load_wav('sound_effect\\000029f7.wav')
+    choose_sound.set_volume(100)
+    bgm = load_music('sound_effect\\Start_Menu.mp3')
+    bgm.set_volume(64)
+    bgm.repeat_play()
 
 
 def exit():
-    global image, menu_image, arrow
+    global image, menu_image, arrow, bgm
+    bgm.pause()
     del image, menu_image, arrow
 
 
@@ -50,10 +61,13 @@ def handle_events():
                 game_framework.quit()
             elif event.key in (SDLK_UP, SDLK_w):
                 move_arrow(0)
+                select_sound.play()
             elif event.key in (SDLK_DOWN, SDLK_s):
                 move_arrow(1)
+                select_sound.play()
             elif event.key in (SDLK_RETURN, SDLK_SPACE):
                 choose_menu()
+                choose_sound.play()
         elif event.type == SDL_QUIT:
             game_framework.quit()
 

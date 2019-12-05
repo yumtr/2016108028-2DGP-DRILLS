@@ -5,15 +5,20 @@ import Cactus_Family
 
 name = "EndingState"
 image = None
+ending_bgm = None
 
 
 def enter():
-    global image
+    global image, ending_bgm
     image = load_image('image_file\\ending.png')
+    ending_bgm = load_music('sound_effect\\ending_bgm.mp3')
+    ending_bgm.set_volume(64)
+    ending_bgm.repeat_play()
 
 
 def exit():
-    global image
+    global image, ending_bgm
+    ending_bgm.pause()
     del image
 
 
