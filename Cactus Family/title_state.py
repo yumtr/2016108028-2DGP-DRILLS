@@ -1,12 +1,13 @@
 import game_framework
 import Cactus_Family
+import score_state
 from pico2d import *
 
 name = "TitleState"
 image = None
 menu_image = None
 arrow = None
-arrow_position = 250
+arrow_position = 300
 menu_num = 1
 bgm = None
 select_sound = None
@@ -17,10 +18,9 @@ def choose_menu():
     if menu_num == 1:
         game_framework.change_state(Cactus_Family)
     elif menu_num == 2:
-        game_framework.quit()
+        game_framework.push_state(score_state)
     elif menu_num == 3:
-        # game_framework.quit()
-        pass
+        game_framework.quit()
 
 
 def move_arrow(y_pos):
@@ -28,7 +28,7 @@ def move_arrow(y_pos):
     if y_pos == 0 and menu_num > 1:
         arrow_position += 100
         menu_num -= 1
-    elif y_pos == 1 and menu_num < 2:
+    elif y_pos == 1 and menu_num < 3:
         arrow_position -= 100
         menu_num += 1
 
@@ -38,9 +38,9 @@ def enter():
     image = load_image('image_file\\title.png')
     menu_image = load_image('image_file\\menu.png')
     arrow = load_image('image_file\\arrow.png')
-    select_sound = load_wav('sound_effect\\000029ef.wav')
+    select_sound = load_wav('sound_effect\\select.wav')
     select_sound.set_volume(100)
-    choose_sound = load_wav('sound_effect\\000029f7.wav')
+    choose_sound = load_wav('sound_effect\\choose.wav')
     choose_sound.set_volume(100)
     bgm = load_music('sound_effect\\Start_Menu.mp3')
     bgm.set_volume(64)
@@ -49,7 +49,7 @@ def enter():
 
 def exit():
     global image, menu_image, arrow, bgm
-    bgm.pause()
+    bgm.set_volume(0)
     del image, menu_image, arrow
 
 
@@ -74,7 +74,7 @@ def handle_events():
 def draw():
     clear_canvas()
     image.draw(450, 400)
-    menu_image.draw(450, 150)
+    menu_image.draw(450, 200)
     arrow.draw(235, arrow_position)
     update_canvas()
 

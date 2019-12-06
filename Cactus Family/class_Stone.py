@@ -24,10 +24,10 @@ class Stone:
         self.down_access = True
         self.move_count = 0
         self.stage_move_count = []
-        self.move_sound = load_wav('sound_effect\\000029f8.wav')
-        self.move_sound.set_volume(100)
+        self.move_sound = load_wav('sound_effect\\move_sound.wav')
+        self.move_sound.set_volume(60)
         self.blocking_sound = load_wav('sound_effect\\blocking.wav')
-        self.blocking_sound.set_volume(72)
+        self.blocking_sound.set_volume(100)
 
     def get_move_count(self):
         self.stage_move_count.append(self.move_count)
@@ -139,7 +139,7 @@ class Stone:
                 self.old_y = self.y - 100
                 self.move_count += 1
                 self.move_sound.play()
-            else:
+            elif event.key in (SDLK_RIGHT, SDLK_d, SDLK_LEFT, SDLK_a, SDLK_UP, SDLK_w, SDLK_DOWN, SDLK_s):
                 self.blocking_sound.play()
 
     def update(self):

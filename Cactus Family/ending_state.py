@@ -6,6 +6,14 @@ import Cactus_Family
 name = "EndingState"
 image = None
 ending_bgm = None
+score_data = None
+
+
+def load_score_data():
+    global score_data
+    with open('max_score_data.json', 'r') as f:
+        score_data = json.load(f)
+    # print(score_data[0]['map_1'])
 
 
 def enter():

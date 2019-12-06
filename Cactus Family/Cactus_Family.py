@@ -66,8 +66,7 @@ def enter():
 
 
 def exit():
-    global cactus_group
-    del cactus_group
+    pass
 
 
 def pause(): pass

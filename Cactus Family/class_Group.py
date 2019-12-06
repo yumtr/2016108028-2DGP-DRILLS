@@ -32,6 +32,7 @@ class Group:
                     if groups_collision_check(self.merge_cactus_groups[i], self.merge_cactus_groups[j]):
                         self.merge_cactus_groups[i].extend(self.merge_cactus_groups[j])
                         self.merge_cactus_groups[i].sort()
+                        self.collision_sound.play()
                         del self.merge_cactus_groups[j]
                         return
 
@@ -43,7 +44,6 @@ class Group:
     def update(self):
         for i in self.all_cactus:  # 충돌이 발생할때 한번만 부름
             if Cactus_Family.cac[i].is_collision:
-                self.collision_sound.play()
                 self.make_cactus_group(i)  # 그룹을 만든다
                 self.all_cactus.remove(i)  # 충돌된 선인장을 전체 리스트에서 제거한다.
         self.group_checking()  # 항상 그룹끼리 체크해줌

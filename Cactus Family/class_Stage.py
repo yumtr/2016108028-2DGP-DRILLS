@@ -14,7 +14,6 @@ ST_X_NONE, ST_X_FORWARD, ST_X_BAKWARD, ST_Y_NONE, ST_Y_UP, ST_Y_DOWN = range(6)
 
 clear = False
 now_stage = 1
-
 cac = []
 block = []
 map_stage = []
@@ -37,10 +36,12 @@ def next_level():
     game_stage = Cactus_Family.get_game_stage()
     global now_stage, clear
     game_stage.set_stage_score()
-    print(game_stage.max_map_score[now_stage], now_stage)
+    print(game_stage.max_map_score[now_stage - 1], now_stage)
     now_stage += 1
     print(now_stage, ' hi ', map_amount)
     if now_stage == map_amount:
+        with open('max_score_data.json', 'w') as f:
+            json.dump(game_stage.max_map_score, f)
         game_framework.push_state(ending_state)
         game_stage.bgm.pause()
     else:
@@ -50,6 +51,7 @@ def next_level():
 
 def change_stage(level):
     game_stage = Cactus_Family.get_game_stage()
+    game_stage.start_sound.play()
     game_stage.set_map_data(level)
     game_stage.setting_stage()
 
@@ -61,22 +63,23 @@ def handle_Stage(event):
         if event.key == SDLK_r:
             game_stage.restart_sound.play()
             change_stage(now_stage)
-        elif event.key == SDLK_1:
-            now_stage = 1
-            change_stage(now_stage)
-        elif event.key == SDLK_2:
-            now_stage = 2
-            change_stage(now_stage)
-        elif event.key == SDLK_3:
-            now_stage = 3
-            change_stage(now_stage)
-        elif event.key == SDLK_4:
-            now_stage = 4
-            change_stage(now_stage)
-        elif event.key == SDLK_t:
-            change_stage(0)
-            for i in range(game_stage.cac_count):
-                cac[i].random_pos()
+        if Cactus_Family.debug_mode:
+            if event.key == SDLK_1:
+                now_stage = 1
+                change_stage(now_stage)
+            elif event.key == SDLK_2:
+                now_stage = 2
+                change_stage(now_stage)
+            elif event.key == SDLK_3:
+                now_stage = 3
+                change_stage(now_stage)
+            elif event.key == SDLK_4:
+                now_stage = 4
+                change_stage(now_stage)
+            elif event.key == SDLK_t:
+                change_stage(0)
+                for i in range(game_stage.cac_count):
+                    cac[i].random_pos()
 
 
 def setting_group():
@@ -101,7 +104,18 @@ def get_block():
 class Stage:
     global now_stage
 
-    def __init__(self, map_image='hi', cac_pos=[], stone_pos=[], block_pos=[], clear_pos=[], star_standard=[]):
+    def __init__(self, map_image='hi', cac_pos=None, stone_pos=None, block_pos=None, clear_pos=None,
+                 star_standard=None):
+        if clear_pos is None:
+            clear_pos = []
+        if star_standard is None:
+            star_standard = []
+        if cac_pos is None:
+            cac_pos = []
+        if block_pos is None:
+            block_pos = []
+        if stone_pos is None:
+            stone_pos = []
         self.text = load_font('font\\CookieRun Bold.ttf')
         self.map_image = map_image
         self.cac_pos = cac_pos
@@ -113,8 +127,10 @@ class Stage:
         self.block_count = len(self.block_pos)
         self.map = 0
         self.star_rank = 0
-        self.max_map_score = [NO_SCORE for i in range(6)]
+        self.max_map_score = [NO_SCORE for i in range(4)]
         self.player = Cactus_Family.get_stone()
+        self.start_sound = load_wav('sound_effect\\stage_start.wav')
+        self.start_sound.set_volume(100)
         self.restart_sound = load_wav('sound_effect\\restart.wav')
         self.restart_sound.set_volume(100)
         self.bgm = load_music('sound_effect\\game_bgm.mp3')
@@ -122,13 +138,14 @@ class Stage:
         self.bgm.repeat_play()
 
     def print_score(self):
+        global map_amount
         for i in range(map_amount - 1):
             self.text.draw(MAP_WIDTH / 2 - 200, MAP_HEIGHT / 3 - (50 * i),
-                           '스테이지 - ' + str(i + 1) + '움직인 횟수 : ' + str(self.max_map_score[i + 1]), color=(255, 255, 255))
+                           '스테이지 - ' + str(i + 1) + ' 이동횟수 : ' + str(self.max_map_score[i]), color=(255, 255, 255))
 
     def set_stage_score(self):
-        if now_stage != map_amount and self.max_map_score[now_stage] > self.player.move_count:
-            self.max_map_score[now_stage] = self.player.move_count
+        if now_stage != map_amount and self.max_map_score[now_stage - 1] > self.player.move_count:
+            self.max_map_score[now_stage - 1] = self.player.move_count
 
     def set_map_data(self, level):
         self.map_image = map_stage[level].map_image
@@ -189,7 +206,7 @@ class Stage:
         global now_stage
         self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
         self.text.draw(45, MAP_HEIGHT - 25, '스테이지 - ' + str(now_stage), color=(255, 255, 255))
-        if self.max_map_score[now_stage] != NO_SCORE:
-            self.text.draw(45, 20, '최고점수 : ' + str(self.max_map_score[now_stage]), color=(255, 255, 255))
+        if self.max_map_score[now_stage - 1] != NO_SCORE:
+            self.text.draw(45, 20, '최고점수 : ' + str(self.max_map_score[now_stage - 1]), color=(255, 255, 255))
         else:
             self.text.draw(45, 20, '점수없음', color=(255, 255, 255))
