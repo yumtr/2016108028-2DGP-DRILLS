@@ -63,6 +63,7 @@ def enter():
     game_stage = Stage()
     game_stage.set_map_data(1)
     game_stage.setting_stage()
+    game_framework.push_state(pause_state)
 
 
 def exit():
