@@ -22,10 +22,10 @@ map_amount = None
 
 def load_map_data():
     global map_stage, map_amount
-    with open('stage_data.json', 'r') as f:
+    with open('json_files\\stage_data.json', 'r') as f:
         map_data = json.load(f)
     map_amount = len(map_data)
-    print('맵갯수', map_amount)
+    # print('맵갯수', map_amount)
     for data in map_data:
         map_stage.append(
             Stage(data['map_image'], data['cac_pos'], data['stone_pos'], data['block_pos'], data['clear_pos'],
@@ -36,11 +36,9 @@ def next_level():
     game_stage = Cactus_Family.get_game_stage()
     global now_stage, clear
     game_stage.set_stage_score()
-    print(game_stage.max_map_score[now_stage - 1], now_stage)
     now_stage += 1
-    print(now_stage, ' hi ', map_amount)
     if now_stage == map_amount:
-        with open('max_score_data.json', 'w') as f:
+        with open('json_files\\max_score_data.json', 'w') as f:
             json.dump(game_stage.max_map_score, f)
         game_framework.push_state(ending_state)
         game_stage.bgm.pause()
@@ -102,8 +100,6 @@ def get_block():
 
 
 class Stage:
-    global now_stage
-
     def __init__(self, map_image='hi', cac_pos=None, stone_pos=None, block_pos=None, clear_pos=None,
                  star_standard=None):
         if clear_pos is None:
@@ -116,7 +112,10 @@ class Stage:
             block_pos = []
         if stone_pos is None:
             stone_pos = []
+        global now_stage
+        now_stage = 1
         self.text = load_font('font\\CookieRun Bold.ttf')
+        self.end_text = load_font('font\\CookieRun Bold.ttf', 50)
         self.map_image = map_image
         self.cac_pos = cac_pos
         self.block_pos = block_pos
@@ -140,8 +139,10 @@ class Stage:
     def print_score(self):
         global map_amount
         for i in range(map_amount - 1):
-            self.text.draw(MAP_WIDTH / 2 - 200, MAP_HEIGHT / 3 - (50 * i),
-                           '스테이지 - ' + str(i + 1) + ' 이동횟수 : ' + str(self.max_map_score[i]), color=(255, 255, 255))
+            if self.max_map_score[i] == NO_SCORE:
+                self.max_map_score[i] = 'No Score'
+            self.end_text.draw(180, 500 - (i * 100),
+                               '스테이지 ' + str(i + 1) + ' - ' + str(self.max_map_score[i]), color=(255, 255, 255))
 
     def set_stage_score(self):
         if now_stage != map_amount and self.max_map_score[now_stage - 1] > self.player.move_count:
@@ -149,27 +150,28 @@ class Stage:
 
     def set_map_data(self, level):
         self.map_image = map_stage[level].map_image
-        print('맵이름', map_stage[level].map_image)
         for i in range(len(map_stage[level].cac_pos)):
             map_stage[level].cac_pos[i] = list(map(int, map_stage[level].cac_pos[i]))
         self.cac_pos = map_stage[level].cac_pos
-        print('선인장', self.cac_pos)
         for i in range(len(map_stage[level].clear_pos)):
             map_stage[level].clear_pos[i] = list(map(int, map_stage[level].clear_pos[i]))
         self.clear_pos = map_stage[level].clear_pos
-        print('클리어', self.clear_pos)
         self.stone_pos = list(map(int, map_stage[level].stone_pos))
-        print('돌', self.stone_pos)
         for i in range(len(map_stage[level].block_pos)):
             map_stage[level].block_pos[i] = list(map(int, map_stage[level].block_pos[i]))
         self.block_pos = map_stage[level].block_pos
-        print('블럭', self.block_pos)
         self.star_standard = list(map(int, map_stage[level].star_standard))
-        print('등급', self.star_standard)
         self.cac_count = map_stage[level].cac_count
-        print('선인장 수', map_stage[level].cac_count)
         self.block_count = map_stage[level].block_count
-        print('블럭 수', map_stage[level].block_count)
+        if Cactus_Family.debug_mode:
+            print('맵이름', map_stage[level].map_image)
+            print('선인장', self.cac_pos)
+            print('클리어', self.clear_pos)
+            print('돌', self.stone_pos)
+            print('블럭', self.block_pos)
+            print('등급', self.star_standard)
+            print('선인장 수', map_stage[level].cac_count)
+            print('블럭 수', map_stage[level].block_count)
 
     def setting_stage(self):
         cac.clear()
@@ -206,7 +208,7 @@ class Stage:
         global now_stage
         self.map.draw(MAP_WIDTH // 2, MAP_HEIGHT // 2)
         self.text.draw(45, MAP_HEIGHT - 25, '스테이지 - ' + str(now_stage), color=(255, 255, 255))
-        if self.max_map_score[now_stage - 1] != NO_SCORE:
-            self.text.draw(45, 20, '최고점수 : ' + str(self.max_map_score[now_stage - 1]), color=(255, 255, 255))
-        else:
-            self.text.draw(45, 20, '점수없음', color=(255, 255, 255))
+        # if self.max_map_score[now_stage - 1] != NO_SCORE:
+        #     self.text.draw(45, 20, '최고점수 : ' + str(self.max_map_score[now_stage - 1]), color=(255, 255, 255))
+        # else:
+        #     self.text.draw(45, 20, '점수없음', color=(255, 255, 255))

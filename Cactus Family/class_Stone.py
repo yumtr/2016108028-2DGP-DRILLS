@@ -147,7 +147,7 @@ class Stone:
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
 
     def render(self):
-        self.text.draw(MAP_WIDTH / 2 - 60, MAP_HEIGHT - 25, '움직인 횟수 ' + str(self.move_count), color=(255, 255, 255))
+        self.text.draw(MAP_WIDTH / 2 - 70, MAP_HEIGHT - 25, '움직인 횟수 : ' + str(self.move_count), color=(255, 255, 255))
         self.anime_cnt += 1
         if 46 > self.anime_cnt > 30:
             self.draw_image(15, 100, 100, 0)

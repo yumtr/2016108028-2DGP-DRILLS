@@ -11,7 +11,7 @@ score_data = None
 
 def load_score_data():
     global score_data
-    with open('max_score_data.json', 'r') as f:
+    with open('json_files\\max_score_data.json', 'r') as f:
         score_data = json.load(f)
     # print(score_data[0]['map_1'])
 
@@ -47,10 +47,10 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
         else:
-            if (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
-                game_framework.quit()
-            elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_SPACE):
+            if event.type == SDL_KEYDOWN:
                 game_framework.change_state(title_state)
+
+
 
 
 def pause(): pass
