@@ -94,10 +94,11 @@ def update_block():
 
 def update():
     game_stage.check_stage_clear()
-    player.update()
     cactus_group.update()
-    update_block()
     update_cactus()
+    player.update()
+    update_block()
+
     handle_events()
     update_canvas()
 

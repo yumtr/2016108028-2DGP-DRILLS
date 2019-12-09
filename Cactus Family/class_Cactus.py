@@ -26,16 +26,16 @@ class Cactus:
     def is_block_around(self, move_type):
         for block in class_Stage.get_block():
             if move_type == ST_X_FORWARD and self.rect[2] == block.rect[0] and self.y == block.y:
-                print('넌 앞으로 못가')
+                # print('넌 앞으로 못가')
                 return False
             elif move_type == ST_X_BAKWARD and self.rect[0] == block.rect[2] and self.y == block.y:
-                print('넌 뒤로 못가')
+                # print('넌 뒤로 못가')
                 return False
             elif move_type == ST_Y_UP and self.rect[1] == block.rect[3] and self.x == block.x:
-                print('넌 위로 못가')
+                # print('넌 위로 못가')
                 return False
             elif move_type == ST_Y_DOWN and self.rect[3] == block.rect[1] and self.x == block.x:
-                print('넌 밑으로 못가')
+                # print('넌 밑으로 못가')
                 return False
         return True
 

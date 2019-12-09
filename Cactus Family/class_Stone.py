@@ -114,33 +114,38 @@ class Stone:
         return True
 
     def handle_Stone(self, event):
-        if event.type == SDL_KEYDOWN and self.x_dir == ST_X_NONE and self.y_dir == ST_Y_NONE:
-            if event.key in (SDLK_RIGHT, SDLK_d) and self.rect[2] < MAP_WIDTH - 50 \
-                    and self.forward_access and self.is_block_around_stone(ST_X_FORWARD):
-                self.x_dir = ST_X_FORWARD
-                self.old_x = self.x + 100
-                self.move_count += 1
-                self.move_sound.play()
-            elif event.key in (SDLK_LEFT, SDLK_a) and 50 < self.rect[0] \
-                    and self.bakward_access and self.is_block_around_stone(ST_X_BAKWARD):
-                self.x_dir = ST_X_BAKWARD
-                self.old_x = self.x - 100
-                self.move_count += 1
-                self.move_sound.play()
-            elif event.key in (SDLK_UP, SDLK_w) and self.rect[1] < MAP_WIDTH - 150 \
-                    and self.up_access and self.is_block_around_stone(ST_Y_UP):
-                self.y_dir = ST_Y_UP
-                self.old_y = self.y + 100
-                self.move_count += 1
-                self.move_sound.play()
-            elif event.key in (SDLK_DOWN, SDLK_s) and 50 < self.rect[3] \
-                    and self.down_access and self.is_block_around_stone(ST_Y_DOWN):
-                self.y_dir = ST_Y_DOWN
-                self.old_y = self.y - 100
-                self.move_count += 1
-                self.move_sound.play()
-            elif event.key in (SDLK_RIGHT, SDLK_d, SDLK_LEFT, SDLK_a, SDLK_UP, SDLK_w, SDLK_DOWN, SDLK_s):
-                self.blocking_sound.play()
+        stop = 0
+        for cac in get_cactus():
+            if not (cac.x_dir == ST_X_NONE and cac.y_dir == ST_Y_NONE):
+                stop += 1
+        if stop == 0:
+            if event.type == SDL_KEYDOWN and self.x_dir == ST_X_NONE and self.y_dir == ST_Y_NONE:
+                if event.key in (SDLK_RIGHT, SDLK_d) and self.rect[2] < MAP_WIDTH - 50 \
+                        and self.forward_access and self.is_block_around_stone(ST_X_FORWARD):
+                    self.x_dir = ST_X_FORWARD
+                    self.old_x = self.x + 100
+                    self.move_count += 1
+                    self.move_sound.play()
+                elif event.key in (SDLK_LEFT, SDLK_a) and 50 < self.rect[0] \
+                        and self.bakward_access and self.is_block_around_stone(ST_X_BAKWARD):
+                    self.x_dir = ST_X_BAKWARD
+                    self.old_x = self.x - 100
+                    self.move_count += 1
+                    self.move_sound.play()
+                elif event.key in (SDLK_UP, SDLK_w) and self.rect[1] < MAP_WIDTH - 150 \
+                        and self.up_access and self.is_block_around_stone(ST_Y_UP):
+                    self.y_dir = ST_Y_UP
+                    self.old_y = self.y + 100
+                    self.move_count += 1
+                    self.move_sound.play()
+                elif event.key in (SDLK_DOWN, SDLK_s) and 50 < self.rect[3] \
+                        and self.down_access and self.is_block_around_stone(ST_Y_DOWN):
+                    self.y_dir = ST_Y_DOWN
+                    self.old_y = self.y - 100
+                    self.move_count += 1
+                    self.move_sound.play()
+                elif event.key in (SDLK_RIGHT, SDLK_d, SDLK_LEFT, SDLK_a, SDLK_UP, SDLK_w, SDLK_DOWN, SDLK_s):
+                    self.blocking_sound.play()
 
     def update(self):
         self.move()

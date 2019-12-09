@@ -71,6 +71,7 @@ def handle_events():
         elif event.type == SDL_QUIT:
             game_framework.quit()
 
+
 def draw():
     clear_canvas()
     image.draw(450, 400)

@@ -47,7 +47,7 @@ def update():
 
 
 def draw():
-    clear_canvas()
+    # clear_canvas()
     image.draw(450, 400)
     for i in range(4):
         if score_data[i] == NO_SCORE:
