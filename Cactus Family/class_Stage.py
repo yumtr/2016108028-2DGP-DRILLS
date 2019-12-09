@@ -32,16 +32,25 @@ def load_map_data():
                   data['star_standard']))
 
 
+def save_score_data():
+    game_stage = Cactus_Family.get_game_stage()
+    with open('json_files\\max_score_data.json', 'r') as f:
+        score_data = json.load(f)
+    if sum(score_data) > sum(game_stage.max_map_score):
+        print('save_data')
+        with open('json_files\\max_score_data.json', 'w') as f:
+            json.dump(game_stage.max_map_score, f)
+    game_framework.push_state(ending_state)
+    game_stage.bgm.pause()
+
+
 def next_level():
     game_stage = Cactus_Family.get_game_stage()
     global now_stage, clear
     game_stage.set_stage_score()
     now_stage += 1
     if now_stage == map_amount:
-        with open('json_files\\max_score_data.json', 'w') as f:
-            json.dump(game_stage.max_map_score, f)
-        game_framework.push_state(ending_state)
-        game_stage.bgm.pause()
+        save_score_data()
     else:
         change_stage(now_stage)
     clear = False
