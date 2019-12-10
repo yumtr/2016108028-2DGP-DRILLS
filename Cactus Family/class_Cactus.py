@@ -27,7 +27,8 @@ class Cactus:
                            load_wav('sound_effect\\cac_move (2).wav'),
                            load_wav('sound_effect\\cac_move (3).wav'),
                            load_wav('sound_effect\\cac_move (4).wav'),
-                           load_wav('sound_effect\\cac_move (5).wav')]
+                           load_wav('sound_effect\\cac_move (5).wav'),
+                           load_wav('sound_effect\\cac_move (6).wav')]
         for i in range(5):
             self.move_sound[i].set_volume(100)
 
@@ -94,10 +95,8 @@ class Cactus:
             return False
 
     def move_sound_setting(self):
+        self.move_sound_cnt = random.randint(0, 5)
         self.move_sound[self.move_sound_cnt].play()
-        print(self.move_sound_cnt)
-        # self.move_sound_cnt += 1
-        self.move_sound_cnt = random.randint(0, 4)
 
     def move_cactus(self, move_type, cac_num):
         if self.is_collision:

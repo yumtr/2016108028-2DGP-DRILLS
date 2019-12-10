@@ -142,7 +142,7 @@ class Stage:
         self.restart_sound = load_wav('sound_effect\\restart.wav')
         self.restart_sound.set_volume(100)
         self.bgm = load_music('sound_effect\\game_bgm.mp3')
-        self.bgm.set_volume(64)
+        self.bgm.set_volume(50)
         self.bgm.repeat_play()
 
     def print_score(self):
