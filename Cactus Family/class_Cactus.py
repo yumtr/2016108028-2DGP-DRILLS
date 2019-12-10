@@ -22,6 +22,14 @@ class Cactus:
         self.rect = [self.x - 50, self.y + 50, self.x + 50, self.y - 50]
         self.is_collision = False
         self.is_movable = True
+        self.move_sound_cnt = 0
+        self.move_sound = [load_wav('sound_effect\\cac_move (1).wav'),
+                           load_wav('sound_effect\\cac_move (2).wav'),
+                           load_wav('sound_effect\\cac_move (3).wav'),
+                           load_wav('sound_effect\\cac_move (4).wav'),
+                           load_wav('sound_effect\\cac_move (5).wav')]
+        for i in range(5):
+            self.move_sound[i].set_volume(100)
 
     def is_block_around(self, move_type):
         for block in class_Stage.get_block():
@@ -85,23 +93,33 @@ class Cactus:
         else:
             return False
 
+    def move_sound_setting(self):
+        self.move_sound[self.move_sound_cnt].play()
+        print(self.move_sound_cnt)
+        # self.move_sound_cnt += 1
+        self.move_sound_cnt = random.randint(0, 4)
+
     def move_cactus(self, move_type, cac_num):
         if self.is_collision:
             for i in range(len(Cactus_Family.cactus_group.merge_cactus_groups)):
                 if cac_num in Cactus_Family.cactus_group.merge_cactus_groups[i]:
                     if move_type == ST_X_FORWARD:
+                        self.move_sound_setting()
                         for j in Cactus_Family.cactus_group.merge_cactus_groups[i]:
                             Cactus_Family.cac[j].x_dir = ST_X_FORWARD
                             Cactus_Family.cac[j].old_x = Cactus_Family.cac[j].x + 100
                     elif move_type == ST_X_BAKWARD:
+                        self.move_sound_setting()
                         for j in Cactus_Family.cactus_group.merge_cactus_groups[i]:
                             Cactus_Family.cac[j].x_dir = ST_X_BAKWARD
                             Cactus_Family.cac[j].old_x = Cactus_Family.cac[j].x - 100
                     elif move_type == ST_Y_UP:
+                        self.move_sound_setting()
                         for j in Cactus_Family.cactus_group.merge_cactus_groups[i]:
                             Cactus_Family.cac[j].y_dir = ST_Y_UP
                             Cactus_Family.cac[j].old_y = Cactus_Family.cac[j].y + 100
                     elif move_type == ST_Y_DOWN:
+                        self.move_sound_setting()
                         for j in Cactus_Family.cactus_group.merge_cactus_groups[i]:
                             Cactus_Family.cac[j].y_dir = ST_Y_DOWN
                             Cactus_Family.cac[j].old_y = Cactus_Family.cac[j].y - 100
@@ -109,15 +127,19 @@ class Cactus:
             if move_type == ST_X_FORWARD:
                 self.x_dir = move_type
                 self.old_x = self.x + 100
+                self.move_sound_setting()
             elif move_type == ST_X_BAKWARD:
                 self.x_dir = move_type
                 self.old_x = self.x - 100
+                self.move_sound_setting()
             elif move_type == ST_Y_UP:
                 self.y_dir = move_type
                 self.old_y = self.y + 100
+                self.move_sound_setting()
             elif move_type == ST_Y_DOWN:
                 self.y_dir = move_type
                 self.old_y = self.y - 100
+                self.move_sound_setting()
 
     def collision_to_player(self, cac_num):
         if self.y == Cactus_Family.player.y and self.x_dir == ST_X_NONE:
