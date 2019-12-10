@@ -94,9 +94,9 @@ def update_block():
 
 def update():
     game_stage.check_stage_clear()
-    cactus_group.update()
-    update_cactus()
     player.update()
+    update_cactus()
+    cactus_group.update()
     update_block()
 
     handle_events()
