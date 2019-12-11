@@ -2,7 +2,7 @@
  False,
  False,
  False,
- None,
+ 'cactus.ico',
  None,
  False,
  False,
@@ -187,7 +187,7 @@
  [],
  False,
  False,
- 1575986661,
+ 1576050832,
  [('runw.exe',
    'C:\\Program '
    'Files\\Python37\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\runw.exe',
